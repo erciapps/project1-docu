@@ -3,57 +3,91 @@ import Layout from '@theme/Layout';
 
 export default function Home() {
   useEffect(() => {
-    const cards = document.querySelectorAll('.lift-card');
-    const MAX_TILT = 10, MAX_MOVE = 10, HOVER_LIFT = 24, SCALE = 1.03;
+  const cards = document.querySelectorAll('.lift-card');
+  const MAX_TILT = 10, MAX_MOVE = 10, HOVER_LIFT = 24, SCALE = 1.03;
 
+  const resetCard = (card) => {
+    card.style.setProperty('--rx','0deg');
+    card.style.setProperty('--ry','0deg');
+    card.style.setProperty('--tx','0px');
+    card.style.setProperty('--ty','0px');
+    card.style.setProperty('--lift','0px');
+    card.style.setProperty('--scale', 1);
+    const glow = card.querySelector('.glow');
+    if (glow) {
+      glow.style.opacity = 0;
+      glow.style.background =
+        'radial-gradient(220px 140px at 50% 50%, rgba(255,255,255,.20), rgba(255,255,255,0) 65%)';
+    }
+  };
+
+  const resetAll = () => cards.forEach(resetCard);
+
+  // tu lógica de onMove/onEnter/onLeave...
+  cards.forEach((card) => {
+    const glow = card.querySelector('.glow');
+
+    const onMove = (e) => {
+      const r = card.getBoundingClientRect();
+      const x = e.clientX - r.left;
+      const y = e.clientY - r.top;
+      const cx = r.width / 2, cy = r.height / 2;
+      const dx = x - cx, dy = y - cy;
+
+      const rx = (-dy / cy) * MAX_TILT;
+      const ry = (dx / cx) * MAX_TILT;
+      const tx = (dx / cx) * MAX_MOVE;
+      const ty = (dy / cy) * MAX_MOVE;
+
+      card.style.setProperty('--rx', rx.toFixed(2) + 'deg');
+      card.style.setProperty('--ry', ry.toFixed(2) + 'deg');
+      card.style.setProperty('--tx', tx.toFixed(2) + 'px');
+      card.style.setProperty('--ty', ty.toFixed(2) + 'px');
+      card.style.setProperty('--lift', HOVER_LIFT + 'px');
+      card.style.setProperty('--scale', SCALE);
+
+      if (glow) {
+        glow.style.opacity = 0.65;
+        glow.style.background =
+          `radial-gradient(220px 140px at ${x}px ${y}px, rgba(255,255,255,.20), rgba(255,255,255,0) 65%)`;
+      }
+    };
+
+    const onEnter = () => {
+      card.style.setProperty('--lift', HOVER_LIFT + 'px');
+      card.style.setProperty('--scale', SCALE);
+    };
+
+    const onLeave = () => resetCard(card);
+
+    card.addEventListener('mousemove', onMove);
+    card.addEventListener('mouseenter', onEnter);
+    card.addEventListener('mouseleave', onLeave);
+
+    // estado inicial limpio
+    resetCard(card);
+  });
+
+  // 🔁 Reset al volver de atrás / recuperar desde bfcache / recuperar foco
+  const onPageShow = () => resetAll();
+  const onPopState = () => resetAll();
+  const onFocus = () => resetAll();
+
+  window.addEventListener('pageshow', onPageShow); // incluye e.persisted=true (bfcache)
+  window.addEventListener('popstate', onPopState);
+  window.addEventListener('focus', onFocus);
+
+  return () => {
+    window.removeEventListener('pageshow', onPageShow);
+    window.removeEventListener('popstate', onPopState);
+    window.removeEventListener('focus', onFocus);
+    // Limpia listeners de cada card
     cards.forEach((card) => {
-      const glow = card.querySelector('.glow');
-      const onMove = (e) => {
-        const r = card.getBoundingClientRect();
-        const x = e.clientX - r.left;
-        const y = e.clientY - r.top;
-        const cx = r.width / 2;
-        const cy = r.height / 2;
-        const dx = x - cx;
-        const dy = y - cy;
-
-        const rx = (-dy / cy) * MAX_TILT;
-        const ry = (dx / cx) * MAX_TILT;
-        const tx = (dx / cx) * MAX_MOVE;
-        const ty = (dy / cy) * MAX_MOVE;
-
-        card.style.setProperty('--rx', rx.toFixed(2) + 'deg');
-        card.style.setProperty('--ry', ry.toFixed(2) + 'deg');
-        card.style.setProperty('--tx', tx.toFixed(2) + 'px');
-        card.style.setProperty('--ty', ty.toFixed(2) + 'px');
-        card.style.setProperty('--lift', HOVER_LIFT + 'px');
-        card.style.setProperty('--scale', SCALE);
-
-        if (glow) {
-          glow.style.opacity = 0.65;
-          glow.style.background = `radial-gradient(220px 140px at ${x}px ${y}px, rgba(255,255,255,.20), rgba(255,255,255,0) 65%)`;
-        }
-      };
-      const onEnter = () => {
-        card.style.setProperty('--lift', HOVER_LIFT + 'px');
-        card.style.setProperty('--scale', SCALE);
-      };
-      const onLeave = () => {
-        card.style.setProperty('--rx','0deg');
-        card.style.setProperty('--ry','0deg');
-        card.style.setProperty('--tx','0px');
-        card.style.setProperty('--ty','0px');
-        card.style.setProperty('--lift','0px');
-        card.style.setProperty('--scale', 1);
-        if (glow) glow.style.opacity = 0;
-      };
-
-      card.addEventListener('mousemove', onMove);
-      card.addEventListener('mouseenter', onEnter);
-      card.addEventListener('mouseleave', onLeave);
-      onLeave();
+      card.replaceWith(card.cloneNode(true)); // truco rápido para soltar handlers
     });
-  }, []);
+  };
+}, []);
+
 
   return (
     <Layout
