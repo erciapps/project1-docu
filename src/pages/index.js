@@ -91,7 +91,7 @@ export default function Home() {
 
   return (
     <Layout
-      title="Proyecto 1 · DAM"
+      title="Proyecto DAM"
       description="Portal principal del recurso Proyecto 1 (DAM)">
       <div style={{
         minHeight:'100vh',
@@ -106,16 +106,16 @@ export default function Home() {
           maxWidth:1100, margin:'48px auto 8px', padding:'0 16px'
         }}>
           <h1 style={{margin:'0 0 6px', fontSize:'clamp(28px,3vw,40px)', letterSpacing:'.3px'}}>
-            🌊 Proyecto 1 — DAM
+            Proyecto — DAM
           </h1>
           <p style={{margin:0, color:'#67e8f9'}}>
-            Portal del módulo de Proyecto 1 de 1º DAM.
+            Portal del módulo de Proyecto de DAM.
           </p>
-
+{/*
           <div style={{display:'flex', gap:12, flexWrap:'wrap', marginTop:16}}>
             <a href="/docs/intro" style={btnPrimary}>Entrar al temario →</a>
             <a href="/blog" style={btnGhost}>Novedades del módulo</a>
-          </div>
+          </div>*/}
         </header>
 
         {/* GRID DE TARJETAS */}
@@ -124,29 +124,40 @@ export default function Home() {
           display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(260px, 1fr))', gap:20,
           perspective:'1000px'
         }}>
-          {/* Guía rápida */}
-          <article className="lift-card" style={cardStyle('#004d4d','#00acc1','#26c6da')}>
-            <div className="glow" style={glowStyle}></div>
-            <span style={pill('#67e8f9')}>Inicio</span>
-            <h3 style={title}>Guía rápida</h3>
-            <p style={desc}>
-              Organización inicial, entregables y requisitos del módulo.
-            </p>
-            <a href="/docs/intro" style={btn('#26c6da')}>Ver guía <span style={arrow}>→</span></a>
-          </article>
 
-          {/* Objetivos */}
-          <article className="lift-card" style={cardStyle('#004d4d','#00acc1','#26c6da')}>
+<article className="lift-card" style={cardStyle('#004d4d','#00acc1','#26c6da')}>
             <div className="glow" style={glowStyle}></div>
             <span style={pill('#a5f3fc')}>Docs</span>
-            <h3 style={title}>Objetivos</h3>
+            <h3 style={title}>Git & GitHub</h3>
             <p style={desc}>
               Descripción de objetivos, planificación y fases del proyecto.
             </p>
-            <a href="/docs/objetivos" style={btn('#26c6da')}>Abrir objetivos <span style={arrow}>→</span></a>
+            <div style={{ textAlign: 'center' }}>
+              <a href="/docs/category/gitgithub" style={btn('#26c6da')}>
+                IR <span style={arrow}>→</span>
+              </a>
+            </div>
           </article>
 
-          {/* Prácticas */}
+          {/* Markdown */}
+          <article className="lift-card" style={cardStyle('#004d4d','#00acc1','#26c6da')}>
+            <div className="glow" style={glowStyle}></div>
+            <span style={pill('#67e8f9')}>Inicio</span>
+            <h3 style={title}>Markdown</h3>
+            <p style={desc}>
+              Organización inicial, entregables y requisitos del módulo.
+            </p>
+           <div style={{ textAlign: 'center' }}>
+              <a href="/docs/category/markdown" style={btn('#26c6da')}>
+                IR <span style={arrow}>→</span>
+              </a>
+            </div>
+          </article>
+
+          
+          
+
+          {/* Prácticas 
           <article className="lift-card" style={cardStyle('#004d4d','#00acc1','#26c6da')}>
             <div className="glow" style={glowStyle}></div>
             <span style={pill('#67e8f9')}>Trabajo</span>
@@ -156,8 +167,9 @@ export default function Home() {
             </p>
             <a href="/docs/entregas" style={btn('#26c6da')}>Ver entregas <span style={arrow}>→</span></a>
           </article>
+          */}
 
-          {/* Recursos */}
+          {/* Recursos 
           <article className="lift-card" style={cardStyle('#004d4d','#00acc1','#26c6da')}>
             <div className="glow" style={glowStyle}></div>
             <span style={pill('#a5f3fc')}>Extra</span>
@@ -167,9 +179,11 @@ export default function Home() {
             </p>
             <a href="/docs/recursos" style={btn('#26c6da')}>Abrir recursos <span style={arrow}>→</span></a>
           </article>
+          */}
+
         </section>
 
-        {/* CTA final */}
+        {/* CTA final 
         <section style={{maxWidth:1100, margin:'0 auto 56px', padding:'0 16px'}}>
           <div style={{
             borderRadius:18, padding:20,
@@ -185,7 +199,7 @@ export default function Home() {
               <a href="/" style={btnGhost}>Volver a ErciApps</a>
             </div>
           </div>
-        </section>
+        </section>*/}
       </div>
     </Layout>
   );
