@@ -1,30 +1,569 @@
-/**
- * Any CSS included here will be global. The classic template
- * bundles Infima by default. Infima is a CSS framework designed to
- * work well for content-centric websites.
- */
+@import "tailwindcss";
 
-/* You can override the default Infima variables here. */
-:root {
-  --ifm-color-primary: #2e8555;
-  --ifm-color-primary-dark: #29784c;
-  --ifm-color-primary-darker: #277148;
-  --ifm-color-primary-darkest: #205d3b;
-  --ifm-color-primary-light: #33925d;
-  --ifm-color-primary-lighter: #359962;
-  --ifm-color-primary-lightest: #3cad6e;
-  --ifm-code-font-size: 95%;
-  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
+/* 🔹 Oculta el panel derecho del TOC */
+.theme-doc-toc-desktop {
+  display: none !important;
 }
 
-/* For readability concerns, you should choose a lighter palette in dark mode. */
-[data-theme='dark'] {
-  --ifm-color-primary: #25c2a0;
-  --ifm-color-primary-dark: #21af90;
-  --ifm-color-primary-darker: #1fa588;
-  --ifm-color-primary-darkest: #1a8870;
-  --ifm-color-primary-light: #29d5b0;
-  --ifm-color-primary-lighter: #32d8b4;
-  --ifm-color-primary-lightest: #4fddbf;
-  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
+
+/* 3️⃣ Asegura que el layout no reserve huecos */
+.theme-doc-content {
+  flex: 1 1 auto !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 auto !important;
+}
+
+/* 4️⃣ Forzar que la columna central use todo el espacio horizontal */
+.theme-doc-layout {
+  display: flex !important;
+  grid-template-columns: 1fr !important;
+  justify-content: center !important;
+}
+
+/* === 🔶 Doc cards (índices de secciones) — robusto para Docusaurus v2 === */
+
+/* Contenedores posibles de las cards */
+.DocCardList,
+.docMainContainer,
+.main-wrapper .container,
+.theme-doc-page {
+  /* separaciones generales */
+  --card-gap: 1.25rem;
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+/* Grid: que las columnas respiren */
+.DocCardList .row,
+.docMainContainer .row,
+.main-wrapper .container .row {
+  gap: var(--card-gap) !important;
+}
+
+
+
+/* === Card base === */
+.DocCardList .card,
+.docMainContainer .card,
+.main-wrapper .container .card,
+.container .row .col .card,
+.container .row .col .card.card--link {
+  background: var(--ifm-background-surface-color) !important;
+  border: 1px solid rgba(255,255,255,0.08) !important;
+  border-radius: 18px !important;
+  padding: 1.25rem !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.25) !important;
+  transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease !important;
+}
+
+/* Hover */
+.DocCardList .card:hover,
+.docMainContainer .card:hover,
+.main-wrapper .container .card:hover,
+.container .row .col .card:hover {
+  transform: translateY(-4px) !important;
+  border-color: #ff6600 !important;
+  box-shadow: 0 8px 24px rgba(255,102,0,0.25) !important;
+}
+
+/* Header (título) */
+.DocCardList .card .card__header h2,
+.docMainContainer .card .card__header h2,
+.container .card .card__header h2 {
+  color: #ff8533 !important;
+  font-weight: 700 !important;
+  font-size: 1.12rem !important;
+  letter-spacing: -0.015em !important;
+  margin: 0 0 .35rem 0 !important;
+}
+
+/* Body (descripción) */
+.DocCardList .card .card__body,
+.docMainContainer .card .card__body,
+.container .card .card__body {
+  color: var(--ifm-color-content-secondary) !important;
+  font-size: .95rem !important;
+  line-height: 1.55 !important;
+}
+
+/* Iconos (si los hay) */
+.DocCardList .card svg,
+.docMainContainer .card svg,
+.container .card svg {
+  color: #ff8533 !important;
+  width: 22px !important;
+  height: 22px !important;
+}
+
+
+/* === Tema claro === */
+[data-theme='light'] .DocCardList .card,
+[data-theme='light'] .docMainContainer .card,
+[data-theme='light'] .main-wrapper .container .card {
+  background: #fff !important;
+  border: 1px solid #eee !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06) !important;
+}
+[data-theme='light'] .DocCardList .card:hover,
+[data-theme='light'] .docMainContainer .card:hover,
+[data-theme='light'] .main-wrapper .container .card:hover {
+  box-shadow: 0 8px 24px rgba(255,102,0,0.25) !important;
+}
+
+
+
+
+
+
+/* Panel lateral - solo visible en móviles */
+
+/* Modo claro */
+[data-theme='light'] .navbar-sidebar {
+  background-color: #ffffff !important;
+  color: #222 !important;
+  border-left: 1px solid #ddd;
+}
+[data-theme='light'] .navbar-sidebar__close svg {
+  color: #ff6600 !important;
+}
+
+/* Modo oscuro */
+[data-theme='dark'] .navbar-sidebar {
+  background-color: #121212 !important;
+  color: #eee !important;
+  border-left: 1px solid #1f1f1f;
+}
+[data-theme='dark'] .navbar-sidebar__close svg {
+  color: #ff8533 !important;
+}
+
+
+
+.navbar__toggle:hover {
+  transform: scale(1.1);
+  opacity: 0.9;
+}
+
+/* Tamaño del ícono SVG (hamburguesa y X) */
+.navbar__toggle svg {
+  width: 32px !important;
+  height: 32px !important;
+}
+
+[data-theme='light'] .navbar__toggle svg {
+  color: #ff6600;
+}
+[data-theme='dark'] .navbar__toggle svg {
+  color: #ff8533;
+}
+
+/* Evitar desplazamiento del contenido debajo del navbar */
+.main-wrapper {
+  margin-top: 0 !important; /* antes: 4rem */
+}
+
+
+@media (max-width: 996px) {
+
+  .markdown {
+    max-width: 100% !important;
+    padding: 1rem !important;
+  }
+
+  /* 🔹 Oculta el sidebar de documentación en móvil */
+  .theme-doc-sidebar-container {
+    display: none !important;
+  }
+
+
+  /* 🔹 Espaciado entre tarjetas */
+  .DocCardList .row,
+  .docMainContainer .row,
+  .main-wrapper .container .row {
+    gap: 1rem !important;
+    
+  }
+
+  .DocCardList .row > .col,
+  .docMainContainer .row > .col,
+  .main-wrapper .container .row > .col {
+    max-width: 100% !important;
+  }
+
+
+  /* ✅ Cuando el menú está activo (hamburguesa abierta) */
+  .navbar-sidebar--active {
+    transform: translateX(0) !important;
+  }
+
+  /* Botón “Back to main menu” */
+  .navbar-sidebar__back {
+    position: sticky;
+    top: 0;
+    background: var(--ifm-background-color);
+    color: #ff6600 !important;
+    font-weight: 600;
+    font-size: 1rem;
+    padding: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    z-index: 10001;
+  }
+
+  .navbar-sidebar__back:hover {
+    background: rgba(255, 102, 0, 0.15);
+    color: #ffa366 !important;
+  }
+
+  /* Menú principal */
+  .navbar-sidebar .menu {
+    margin: 0;
+    padding: 0.5rem 1rem;
+    width: 100%;
+  }
+
+  .navbar-sidebar .menu__list {
+    width: 100%;
+    padding: 0;
+  }
+
+  .navbar-sidebar .menu__link {
+    font-size: 1rem;
+    line-height: 1.6;
+    padding: 0.55rem 0.75rem !important;
+  }
+
+  /* Animación y transición de paneles */
+  .navbar-sidebar__items {
+    transition: transform 0.25s ease, opacity 0.25s ease;
+    will-change: transform, opacity;
+  }
+
+  /* Panel secundario (submenu) */
+  .navbar-sidebar__items--show-secondary .menu__list--show-secondary {
+    position: absolute !important;
+    inset: 0;
+    background: var(--ifm-background-color);
+    padding: 1rem 1rem 3rem 1rem;
+    overflow-y: auto !important;
+    z-index: 10000;
+  }
+
+  /* Ocultar panel anterior */
+  .navbar-sidebar__items:not(.navbar-sidebar__items--show-secondary)
+    .menu__list--show-secondary {
+    display: none !important;
+  }
+
+  /* Botón de cierre (X) */
+  .navbar-sidebar__close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    padding: 0.6rem;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.05);
+    transition: background 0.2s ease, transform 0.2s ease;
+  }
+
+  .navbar-sidebar__close:hover {
+    background: rgba(255, 102, 0, 0.15);
+    transform: rotate(90deg);
+  }
+
+  /* === 🎨 Tema oscuro y claro === */
+  [data-theme='dark'] .navbar-sidebar {
+    background: #0e0e0e !important;
+    color: #eee !important;
+  }
+
+  [data-theme='light'] .navbar-sidebar {
+    background: #ffffff !important;
+    color: #222 !important;
+  }
+}
+
+
+
+/* === 🚀 Espaciado inferior entre avisos y navegación === */
+.alert {
+  border-radius: 10px;
+  padding: 1rem 1.25rem;
+  margin: 1.5rem 0;
+  border-left: 6px solid;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.25);
+  line-height: 1.6;
+}
+
+/* === ⚠️ ALERTAS === */
+/* --- Tema oscuro --- */
+[data-theme='dark'] .alert--warning {
+  border-left-color: #ffcc00;
+  background: rgba(255, 204, 0, 0.12);
+  color: #f8f8f8;
+}
+[data-theme='dark'] .alert--info {
+  border-left-color: #00c3ff;
+  background: rgba(0, 195, 255, 0.12);
+  color: #f1f1f1;
+}
+[data-theme='dark'] .alert--tip {
+  border-left-color: #00ff88;
+  background: rgba(0, 255, 136, 0.12);
+  color: #f1f1f1;
+}
+
+/* --- Tema claro --- */
+[data-theme='light'] .alert--warning {
+  border-left-color: #ffcc00;
+  background-color: #fff9e6;
+  color: #333;
+}
+[data-theme='light'] .alert--info {
+  border-left-color: #00aaff;
+  background-color: #eaf6ff;
+  color: #222;
+}
+[data-theme='light'] .alert--tip {
+  border-left-color: #00cc77;
+  background-color: #ecfff6;
+  color: #222;
+}
+
+/* === 💡 Enlaces y código dentro de alertas === */
+.alert a {
+  color: #ff6600;
+  font-weight: 500;
+  text-decoration: underline;
+}
+.alert code {
+  background-color: rgba(255, 255, 255, 0.2);
+  color: #d35400;
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+[data-theme='light'] .alert code {
+  background-color: rgba(255, 255, 255, 0.5);
+  color: #c0392b;
+}
+
+/* === 📄 Navegación inferior === */
+.pagination-nav {
+  margin-top: 3rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+.pagination-nav__link {
+  background-color: rgba(255, 255, 255, 0.04);
+  border-radius: 8px;
+  padding: 0.6rem 1.2rem;
+  transition: all 0.25s ease;
+}
+.pagination-nav__link:hover {
+  background-color: rgba(255, 102, 0, 0.15);
+  color: #ff8533 !important;
+  transform: translateY(-1px);
+}
+
+
+/* === 🧭 Breadcrumbs === */
+.breadcrumbs {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 1rem;
+}
+/* .breadcrumbs__item:not(:last-child)::after {
+  content: "›";
+  color: #888;
+  margin: 0 0.4rem;
+  font-size: 1rem;
+} */
+.breadcrumbs__link {
+  text-decoration: none;
+  transition: color 0.2s ease;
+  font-size: 1.05rem;
+}
+.breadcrumbs__link:hover {
+  color: #ff6600 !important;
+}
+.breadcrumbs__item--active .breadcrumbs__link {
+  color: #ff6600 !important;
+  font-weight: 600;
+}
+/* 🧭 Breadcrumbs — un solo separador personalizado */
+.theme-doc-breadcrumbs .breadcrumbs__separator {
+  display: none !important; /* Oculta el separador original de Docusaurus */
+}
+
+/* === 🎨 Colores personalizados para código Java === */
+.language-java .token.keyword { color: #ff9c40; font-weight: 600; }
+.language-java .token.class-name { color: #00bfff; }
+.language-java .token.function { color: #ffcc66; }
+.language-java .token.string { color: #a5e075; }
+.language-java .token.comment { color: #6a737d; font-style: italic; }
+.language-java .token.number { color: #f9c859; }
+.language-java .token.operator { color: #9cdcfe; }
+.language-java .token.punctuation { color: #c5c8c6; }
+
+/* === Terminal typing === */
+@keyframes typing { from { width: 0; } to { width: 100%; } }
+.typing {
+  display: inline-block;
+  overflow: hidden;
+  white-space: nowrap;
+  border-right: 2px solid #22c55e;
+  animation: typing 2s steps(30, end);
+}
+
+
+.navbar__inner {
+  max-width: 1200px;
+   padding-left: 20px; /* margen izquierdo */
+  align-items: center;
+  justify-content: space-between;
+}
+.navbar__items { display: flex; align-items: center; gap: 1.8rem; }
+
+/* Botón de cambio de tema */
+.navbar__items button, .navbar__items svg {
+  width: 24px !important;
+  height: 24px !important;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+.navbar__items button:hover svg {
+  transform: scale(1.15);
+  color: #ff6600 !important;
+}
+
+
+
+/* === 🎨 SIDEBAR === */
+.theme-doc-sidebar-container {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.95rem;
+  border-right: 1px solid #1f1f1f;
+}
+.theme-doc-sidebar-item-category-level-1 > .menu__list-item-collapsible > .menu__link {
+  color: #ff6600 !important;
+  font-weight: 700;
+}
+.theme-doc-sidebar-item-category-level-2 .menu__link {
+  font-weight: 400;
+  padding-left: 1.6rem;
+  position: relative;
+  transition: all 0.2s ease-in-out;
+}
+.theme-doc-sidebar-item-category-level-3 .menu__link {
+  padding-left: 2.2rem;
+  font-size: 0.9rem;
+  position: relative;
+}
+.menu__link--active {
+  background-color: rgba(255, 102, 0, 0.1) !important;
+  color: #ff6600 !important;
+  font-weight: 600;
+  border-radius: 6px;
+  padding-left: 1.2rem !important;
+  position: relative;
+}
+.menu__link--active::before {
+  content: "";
+  position: absolute;
+  left: 0.4rem;
+  top: 0.6rem;
+  width: 3px;
+  height: 1rem;
+  background: #ff6600;
+  border-radius: 3px;
+}
+.menu__link {
+  padding: 0.45rem 0.9rem;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+.menu__link:hover { transform: translateX(2px); }
+
+
+
+
+
+/* === 🧾 Markdown (espaciado y legibilidad mejorados) === */
+.markdown {
+  line-height: 1.75;
+  font-size: 1.05rem;
+  font-family: 'Inter', sans-serif;
+  width: 100%;
+  max-width: 900px; /* 🔹 ancho máximo legible en escritorio */
+  margin: 0 auto;
+  padding: 2rem 3rem;
+}
+.markdown h1, .markdown h2, .markdown h3 {
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+}
+.markdown h1 {
+  font-size: 1.8rem;
+  border-bottom: 2px solid #ff6600;
+  padding-bottom: 0.3rem;
+}
+.markdown h2 { font-size: 1.4rem; color: #ff8533; }
+.markdown h3 { font-size: 1.2rem; color: #ff9c40; }
+.markdown p { margin-bottom: 1.25rem; }
+.markdown ul, .markdown ol { margin-left: 2rem; margin-bottom: 1.25rem; }
+
+/* === 💬 Código === */
+.markdown code {
+  border-radius: 6px;
+  padding: 0.15rem 0.5rem;
+  font-family: "Fira Code", monospace;
+  font-size: 0.95rem;
+}
+.markdown pre {
+  border-radius: 12px;
+  padding: 1.25rem;
+  font-family: 'Fira Code', monospace;
+  font-size: 0.95rem;
+  border: 1px solid #242628;
+  overflow-x: auto;
+  line-height: 1.6;
+  margin: 1.5rem 0;
+}
+
+
+/* === 🌙 Tema oscuro === */
+[data-theme='dark'] .markdown { color: #e8e8e8; }
+[data-theme='dark'] .markdown pre {
+  background: #111315 !important;
+  color: #f1f1f1;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+[data-theme='dark'] .markdown code { background-color: rgba(255,255,255,0.07); color: #ff8533; }
+
+/* === 🌞 Tema claro === */
+[data-theme='light'] .markdown { color: #222; }
+[data-theme='light'] .markdown pre {
+  background: #f0f0f0 !important;
+  color: #222;
+  border: 1px solid #ddd;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+[data-theme='light'] .markdown code {
+  background-color: #fff3e0;
+  color: #d35400;
+}
+
+/* === 🕶️ Transición suave === */
+html[data-theme] * {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 }

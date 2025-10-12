@@ -1,12 +1,7 @@
 // @ts-check
-// `@type` JSDoc annotations allow editor autocompletion and type checking
-// (when paired with `@ts-check`).
-// There are various equivalent ways to declare your Docusaurus config.
-// See: https://docusaurus.io/docs/api/docusaurus-config
-
-import {themes as prismThemes} from 'prism-react-renderer';
-
-// This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
+import { themes as prismThemes } from 'prism-react-renderer';
+import autoprefixer from 'autoprefixer';
+import tailwindcss from '@tailwindcss/postcss';
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
@@ -14,33 +9,47 @@ const config = {
   tagline: 'Ercilla are cool',
   favicon: 'img/favicon.ico',
 
-  // Future flags, see https://docusaurus.io/docs/api/docusaurus-config#future
-  future: {
-    v4: true, // Improve compatibility with the upcoming Docusaurus v4
-  },
+  future: { v4: true },
 
-  // Set the production url of your site here
   url: 'https://project1-erciapps.sytes.net',
-  // Set the /<baseUrl>/ pathname under which your site is served
-  // For GitHub pages deployment, it is often '/<projectName>/'
   baseUrl: '/',
 
-  // GitHub pages deployment config.
-  // If you aren't using GitHub pages, you don't need these.
-  organizationName: 'erciapps', // Usually your GitHub org/user name.
-  projectName: 'project1-docu', // Usually your repo name.
+  organizationName: 'erciapps',
+  projectName: 'project1-docu',
   trailingSlash: false,
   onBrokenLinks: 'throw',
-  onBrokenMarkdownLinks: 'warn',
 
-  // Even if you don't use internationalization, you can use this field to set
-  // useful metadata like html lang. For example, if your site is Chinese, you
-  // may want to replace "en" with "zh-Hans".
+  markdown: {
+    hooks: {
+      onBrokenMarkdownLinks: 'warn',
+      onBrokenMarkdownImages: 'warn',
+    },
+  },
+
   i18n: {
     defaultLocale: 'en',
     locales: ['en'],
   },
 
+  // 🔌 Plugins
+  plugins: [
+    '@docusaurus/plugin-ideal-image',
+    'docusaurus-plugin-image-zoom',
+
+    // ⚙️ Integración de Tailwind + Autoprefixer
+    function tailwindPlugin() {
+      return {
+        name: 'docusaurus-tailwindcss',
+        configurePostCss(postcssOptions) {
+          postcssOptions.plugins.push(tailwindcss);
+          postcssOptions.plugins.push(autoprefixer);
+          return postcssOptions;
+        },
+      };
+    },
+  ],
+
+  // ⚙️ Preset clásico + integración CSS personalizada
   presets: [
     [
       'classic',
@@ -48,105 +57,82 @@ const config = {
       ({
         docs: {
           sidebarPath: './sidebars.js',
-          // Please change this to your repo.
-          // Remove this to remove the "edit this page" links.
-          //editUrl:
-          //  'https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/',
         },
         blog: {
           showReadingTime: true,
-          feedOptions: {
-            type: ['rss', 'atom'],
-            xslt: true,
-          },
-          // Please change this to your repo.
-          // Remove this to remove the "edit this page" links.
-          //editUrl:
-           // 'https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/',
-          // Useful options to enforce blogging best practices
+          feedOptions: { type: ['rss', 'atom'], xslt: true },
           onInlineTags: 'warn',
           onInlineAuthors: 'warn',
           onUntruncatedBlogPosts: 'warn',
         },
         theme: {
-          customCss: './src/css/custom.css',
+          customCss: require.resolve('./src/css/custom.css'),
         },
       }),
     ],
   ],
 
+  // 🎨 Configuración del tema
   themeConfig:
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({
-      // Replace with your project's social card
       image: 'img/docusaurus-social-card.jpg',
+
+      // 📚 Sidebar
+      docs: {
+        sidebar: {
+          hideable: false,
+          autoCollapseCategories: false,
+        },
+      },
+
+      // 🧭 Tabla de contenidos
+      tableOfContents: {
+        minHeadingLevel: 2,
+        maxHeadingLevel: 4,
+      },
+
       navbar: {
-        title: 'ErciApps',
+        title: '',
         logo: {
-        alt: 'ErciApps',
-        src: 'img/logo.svg',
-        href: 'https://erciapps.sytes.net'},
+          alt: 'ErciApps',
+          src: 'img/ercilogo.png',
+          href: 'https://erciapps.sytes.net',
+          target: '_self',
+          height: 40,
+          width: 40,
+        },
         items: [
           { to: '/', label: 'Inicio', position: 'left' },
-          {to: '/docs/category/gitgithub', label: 'Git&GitHub', position: 'left'},
-          {to: '/docs/category/markdown', label: 'Markdown', position: 'left'},
-          //{
-         //   href: 'https://github.com/facebook/docusaurus',
-         //   label: 'GitHub',
-        //    position: 'right',
-        //  },
+          { to: '/docs/category/gitgithub', label: 'Git&GitHub', position: 'left' },
+          { to: '/docs/category/markdown', label: 'Markdown', position: 'left' },
         ],
       },
+
       footer: {
         style: 'dark',
-        /*links: [
-          {
-            title: 'Docs',
-            items: [
-              {
-                label: 'Tutorial',
-                to: '/docs/intro',
-              },
-            ],
-          },
-          {
-            title: 'Community',
-            items: [
-              {
-                label: 'Stack Overflow',
-                href: 'https://stackoverflow.com/questions/tagged/docusaurus',
-              },
-              {
-                label: 'Discord',
-                href: 'https://discordapp.com/invite/docusaurus',
-              },
-              {
-                label: 'X',
-                href: 'https://x.com/docusaurus',
-              },
-            ],
-          },
-          {
-            title: 'More',
-            items: [
-              {
-                label: 'Blog',
-                to: '/blog',
-              },
-              {
-                label: 'GitHub',
-                href: 'https://github.com/facebook/docusaurus',
-              },
-            ],
-          },
-        ],*/
         copyright: `Copyright © ${new Date().getFullYear()} ErciApps`,
       },
+
       prism: {
         theme: prismThemes.github,
         darkTheme: prismThemes.dracula,
+        additionalLanguages: ['java', 'csharp', 'bash', 'json', 'python'],
+      },
+
+      zoom: {
+        selector: '.markdown img, .markdown picture img',
+        background: {
+          light: 'rgb(255, 255, 255)',
+          dark: 'rgb(50, 50, 50)',
+        },
       },
     }),
+
+  // 🖋️ Fuente moderna
+  stylesheets: [
+    'https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap',
+  ],
 };
 
 export default config;
