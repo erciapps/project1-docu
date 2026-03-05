@@ -1,5 +1,66 @@
 @import "tailwindcss";
 
+/* ==== ESTILO PRO TABLA MARKDOWN ====
+   Válido para Docusaurus (modo claro/oscuro)
+   Cris 2.0 Edition
+====================================== */
+
+.markdown table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.2rem 0;
+  font-size: 0.95rem;
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--ifm-table-background);
+}
+
+/* Encabezado sin azul, estilo gris suave */
+.markdown table thead tr {
+  background: var(--ifm-color-emphasis-200); /* gris claro / gris oscuro según modo */
+  color: var(--ifm-font-color-base);
+}
+
+.markdown table th {
+  padding: 12px 14px;
+  text-align: left;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* Celdas */
+.markdown table td {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--ifm-table-border-color);
+  white-space: nowrap; /* que no se peguen los tiempos */
+}
+
+/* Alternancia de filas */
+.markdown table tbody tr:nth-child(even) {
+  background: var(--ifm-hover-overlay);
+}
+
+/* Hover suave en fila */
+.markdown table tbody tr:hover {
+  background: var(--ifm-color-emphasis-200);
+  transition: background 0.15s ease-in-out;
+}
+
+/* Bordes redondeados al inicio y fin */
+.markdown table tr:first-child th:first-child {
+  border-top-left-radius: 8px;
+}
+.markdown table tr:first-child th:last-child {
+  border-top-right-radius: 8px;
+}
+.markdown table tr:last-child td:first-child {
+  border-bottom-left-radius: 8px;
+}
+.markdown table tr:last-child td:last-child {
+  border-bottom-right-radius: 8px;
+}
+
+
 /* 🔹 Oculta el panel derecho del TOC */
 .theme-doc-toc-desktop {
   display: none !important;
