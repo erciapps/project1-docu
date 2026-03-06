@@ -154,6 +154,20 @@ export default function Home() {
             </div>
           </article>
 
+
+<article className="lift-card" style={cardStyle('#004d4d','#00acc1','#26c6da')}>
+            <div className="glow" style={glowStyle}></div>
+            <span style={pill('#67e8f9')}>Inicio</span>
+            <h3 style={title}>Acceso a datos</h3>
+            <p style={desc}>
+              Recopilación de código para AD
+            </p>
+           <div style={{ textAlign: 'center' }}>
+              <a href="/docs/category/acceso-a-datos" style={btn('#26c6da')}>
+                IR <span style={arrow}>→</span>
+              </a>
+            </div>
+          </article>
           
           
 
