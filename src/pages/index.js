@@ -155,7 +155,7 @@ export default function Home() {
           </article>
 
 
-<article className="lift-card" style={cardStyle('#004d4d','#00acc1','#26c6da')}>
+          <article className="lift-card" style={cardStyle('#004d4d','#00acc1','#26c6da')}>
             <div className="glow" style={glowStyle}></div>
             <span style={pill('#67e8f9')}>Inicio</span>
             <h3 style={title}>Acceso a datos</h3>
@@ -164,6 +164,20 @@ export default function Home() {
             </p>
            <div style={{ textAlign: 'center' }}>
               <a href="/docs/category/acceso-a-datos" style={btn('#26c6da')}>
+                IR <span style={arrow}>→</span>
+              </a>
+            </div>
+          </article>
+
+          <article className="lift-card" style={cardStyle('#004d4d','#00acc1','#26c6da')}>
+            <div className="glow" style={glowStyle}></div>
+            <span style={pill('#67e8f9')}>Inicio</span>
+            <h3 style={title}>PROYECTO</h3>
+            <p style={desc}>
+              Proyecto intermodular 1º DAM Curso 2025-2026
+            </p>
+           <div style={{ textAlign: 'center' }}>
+              <a href="/docs/category/proyecto" style={btn('#26c6da')}>
                 IR <span style={arrow}>→</span>
               </a>
             </div>

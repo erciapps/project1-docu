@@ -1,0 +1,125 @@
+---
+sidebar_position: 6
+---
+
+# Departamento de Mantenimiento Técnico
+
+El departamento de Mantenimiento Técnico tiene como objetivo principal ofrecer servicios de mantenimiento preventivo y correctivo sobre infraestructuras tecnológicas, garantizando el correcto funcionamiento de los sistemas de los clientes.
+
+Para ello, se ha diseñado un sistema dividido en una **parte pública** y una **parte privada**, permitiendo tanto la consulta de servicios como la gestión de intervenciones y su seguimiento.
+
+---
+
+## 1. Parte pública
+
+La parte pública del sistema es accesible sin necesidad de iniciar sesión y permite mostrar información general del departamento, así como los servicios de mantenimiento disponibles.
+
+Esta sección incluye las siguientes funcionalidades:
+
+- Presentación del departamento, donde se describen los servicios de mantenimiento preventivo y correctivo.
+- Listado de servicios de mantenimiento, mostrando información básica como tipo de servicio, descripción y alcance.
+- Detalle de cada servicio, incluyendo características, cobertura y condiciones.
+- Formulario de solicitud de intervención, que permite a los usuarios solicitar un servicio de mantenimiento.
+- Seguimiento de servicio, donde el usuario puede consultar el estado de una intervención mediante un identificador.
+
+Únicamente se mostrarán en esta sección los servicios que se encuentren en estado **activo**.
+
+---
+
+## 2. Parte privada
+
+La parte privada del sistema es accesible mediante autenticación y distingue dos perfiles: **administrador** y **cliente/empleado**.
+
+---
+
+### 2.1. Funcionalidades del administrador
+
+#### Gestión de servicios de mantenimiento
+
+El sistema permite:
+
+- Crear nuevos servicios de mantenimiento.
+- Consultar el listado y detalle de servicios.
+- Modificar servicios existentes.
+- Eliminar servicios en casos excepcionales.
+- Activar o desactivar servicios (**activo/inactivo**).
+
+Filtros disponibles:
+
+- Tipo de mantenimiento (preventivo/correctivo)
+- Estado
+- Sede
+- Rango de fechas
+
+---
+
+#### Gestión de intervenciones
+
+El administrador puede:
+
+- Consultar solicitudes de intervención.
+- Filtrar por:
+  - Cliente/empleado
+  - Estado (pendiente, en proceso, finalizada, cancelada)
+  - Tipo de servicio
+  - Rango de fechas
+- Cambiar el estado de la intervención.
+- Asignar técnicos responsables.
+- Añadir comentarios o informes técnicos.
+
+Cada intervención tendrá:
+
+- Estado: **pendiente, en proceso, finalizada, cancelada**
+- Servicio asociado
+- Técnico asignado
+- Fecha de intervención
+
+---
+
+### 2.2. Funcionalidades del cliente/empleado
+
+El usuario dispone de un portal privado desde el cual puede:
+
+- Solicitar una intervención de mantenimiento.
+- Consultar el estado de sus intervenciones.
+- Ver el detalle de cada intervención.
+- Acceder al historial de servicios realizados.
+
+El usuario no puede modificar el estado de las intervenciones.
+
+---
+
+## 3. Integración con datos comunes
+
+El sistema se integra con la API para obtener:
+
+- Departamentos  
+- Empleados  
+- Sedes  
+
+Estos datos se utilizan para:
+
+- Identificar al usuario que solicita el servicio
+- Asignar técnicos responsables
+- Asociar intervenciones a sedes
+
+---
+
+## 4. Base de datos del departamento
+
+Las principales entidades son:
+
+- **Servicios de mantenimiento**, con información como tipo, descripción, alcance y estado.
+- **Intervenciones**, que incluyen usuario, servicio, estado, fechas y técnico asignado.
+- (Opcional) **Informes técnicos**, asociados a cada intervención.
+
+---
+
+## 5. Consideraciones adicionales
+
+- El sistema diferencia entre servicios **activos e inactivos**.
+- Se mantiene un histórico de intervenciones realizadas.
+- Se implementa un sistema de seguimiento mediante identificador.
+- Se permite la asignación de técnicos a cada intervención.
+- Se aplican filtros para facilitar la gestión.
+- Se garantiza la coherencia con los datos comunes mediante API.

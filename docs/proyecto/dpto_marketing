@@ -1,0 +1,122 @@
+---
+sidebar_position: 18
+---
+
+# Departamento de Marketing y Comunicación
+
+El departamento de Marketing y Comunicación tiene como objetivo principal gestionar la difusión de servicios, campañas informativas y comunicaciones de la empresa hacia clientes y público general.
+
+Este departamento permite publicar contenido, promocionar servicios y gestionar la comunicación externa de la empresa.
+
+Para ello, se ha diseñado un sistema dividido en una **parte pública** y una **parte privada**, facilitando tanto la consulta de contenidos como su gestión interna.
+
+---
+
+## 1. Parte pública
+
+La parte pública del sistema es accesible sin necesidad de iniciar sesión y permite mostrar información general del departamento, así como contenido publicado por la empresa.
+
+Esta sección incluye las siguientes funcionalidades:
+
+- Presentación del departamento, donde se describen las actividades de comunicación y marketing.
+- Listado de publicaciones o campañas, mostrando información básica como título, tipo (noticia, campaña, evento) y fecha.
+- Detalle de cada publicación, incluyendo contenido completo, imágenes o información relevante.
+- Listado de eventos o campañas activas.
+- Formulario de contacto para solicitar información o colaborar.
+
+Únicamente se mostrarán en esta sección los contenidos que se encuentren en estado **publicado**.
+
+---
+
+## 2. Parte privada
+
+La parte privada del sistema es accesible mediante autenticación y distingue dos perfiles: **administrador** y **cliente/empleado**.
+
+---
+
+### 2.1. Funcionalidades del administrador
+
+#### Gestión de contenidos
+
+El sistema permite:
+
+- Crear nuevas publicaciones o campañas.
+- Consultar el listado y detalle de contenidos.
+- Modificar contenidos existentes.
+- Eliminar contenidos en casos excepcionales.
+- Publicar o despublicar contenidos (**borrador/publicado**).
+
+Filtros disponibles:
+
+- Tipo de contenido (noticia, campaña, evento)
+- Estado
+- Fecha
+- Sede
+
+---
+
+#### Gestión de comunicaciones
+
+El administrador puede:
+
+- Consultar solicitudes o contactos recibidos.
+- Filtrar por:
+  - Tipo de consulta
+  - Fecha
+  - Estado (pendiente, respondida, cerrada)
+- Responder a solicitudes.
+- Añadir observaciones.
+
+Cada comunicación tendrá:
+
+- Estado: **pendiente, respondida, cerrada**
+- Tipo de consulta
+- Usuario
+
+---
+
+### 2.2. Funcionalidades del cliente/empleado
+
+El usuario dispone de acceso a:
+
+- Consulta de publicaciones y campañas.
+- Envío de solicitudes de información.
+- Consulta de respuestas recibidas (si aplica).
+
+El usuario no puede modificar contenidos.
+
+---
+
+## 3. Integración con datos comunes
+
+El sistema se integra con la API para obtener:
+
+- Departamentos  
+- Empleados  
+- Sedes  
+
+Estos datos se utilizan para:
+
+- Asociar contenidos a sedes
+- Identificar responsables
+- Gestionar comunicaciones
+
+---
+
+## 4. Base de datos del departamento
+
+Las principales entidades son:
+
+- **Publicaciones**, con información como título, contenido, tipo y estado.
+- **Campañas/Eventos**, asociados a publicaciones.
+- **Solicitudes de contacto**, con información del usuario y estado.
+
+---
+
+## 5. Consideraciones adicionales
+
+- El sistema permite publicar contenido dinámico.
+- Se diferencia entre contenidos en borrador y publicados.
+- Se mantiene un histórico de publicaciones.
+- Se implementa filtrado para facilitar la gestión.
+- Se garantiza la coherencia con los datos comunes mediante API.

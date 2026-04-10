@@ -1,0 +1,135 @@
+---
+sidebar_position: 10
+---
+
+# Departamento de Proyectos y Planificación
+
+El departamento de Proyectos y Planificación tiene como objetivo principal la gestión integral de proyectos tecnológicos, desde su definición hasta su ejecución, así como la planificación de recursos y servicios asociados.
+
+Este departamento permite coordinar trabajos complejos, organizar tareas y mostrar a los clientes ejemplos de proyectos realizados por la empresa.
+
+Para ello, se ha diseñado un sistema dividido en una **parte pública** y una **parte privada**, facilitando tanto la consulta de proyectos como la gestión interna de los mismos.
+
+---
+
+## 1. Parte pública
+
+La parte pública del sistema es accesible sin necesidad de iniciar sesión y permite mostrar información general del departamento, así como el portfolio de proyectos realizados.
+
+Esta sección incluye las siguientes funcionalidades:
+
+- Presentación del departamento, donde se describen los servicios de gestión de proyectos y planificación.
+- Portfolio de proyectos realizados, mostrando información básica como nombre del proyecto, tipo, cliente (opcional) y breve descripción.
+- Detalle de cada proyecto, incluyendo objetivos, tecnologías utilizadas, alcance y resultados obtenidos.
+- Formulario de solicitud de proyecto, que permite a los usuarios solicitar la realización de un nuevo proyecto o servicio.
+
+Únicamente se mostrarán en esta sección los proyectos que se encuentren en estado **finalizado y publicados**, quedando ocultos aquellos en curso o no publicados.
+
+---
+
+## 2. Parte privada
+
+La parte privada del sistema es accesible mediante autenticación y distingue dos perfiles: **administrador** y **cliente/empleado**.
+
+---
+
+### 2.1. Funcionalidades del administrador
+
+#### Gestión de proyectos
+
+El sistema permite:
+
+- Crear nuevos proyectos.
+- Consultar el listado y detalle de proyectos.
+- Modificar proyectos existentes.
+- Eliminar proyectos en casos excepcionales.
+- Publicar o despublicar proyectos (visible/no visible en la parte pública).
+
+Filtros disponibles:
+
+- Estado del proyecto (pendiente, en curso, finalizado)
+- Tipo de proyecto
+- Sede
+- Rango de fechas
+
+---
+
+#### Gestión de planificación
+
+El administrador puede:
+
+- Definir tareas asociadas a proyectos.
+- Asignar recursos y responsables.
+- Establecer fechas de inicio y fin.
+- Consultar el estado de la planificación.
+
+---
+
+#### Gestión de solicitudes de proyecto
+
+El administrador puede:
+
+- Consultar solicitudes de nuevos proyectos.
+- Filtrar por:
+  - Cliente/empleado
+  - Estado (pendiente, en evaluación, aceptada, rechazada)
+  - Tipo de proyecto
+  - Fechas
+- Cambiar el estado de la solicitud.
+- Añadir comentarios o propuestas.
+
+Cada solicitud tendrá:
+
+- Estado: **pendiente, en evaluación, aceptada, rechazada**
+- Descripción del proyecto solicitado
+- Cliente asociado
+
+---
+
+### 2.2. Funcionalidades del cliente/empleado
+
+El usuario dispone de un portal privado desde el cual puede:
+
+- Solicitar nuevos proyectos.
+- Consultar el estado de sus solicitudes.
+- Ver el detalle de los proyectos en los que participa (si aplica).
+
+El usuario no puede modificar el estado de los proyectos ni de las solicitudes.
+
+---
+
+## 3. Integración con datos comunes
+
+El sistema se integra con la API para obtener:
+
+- Departamentos  
+- Empleados  
+- Sedes  
+
+Estos datos se utilizan para:
+
+- Asignar responsables a proyectos
+- Identificar clientes o solicitantes
+- Asociar proyectos a sedes
+
+---
+
+## 4. Base de datos del departamento
+
+Las principales entidades son:
+
+- **Proyectos**, con información como nombre, descripción, tipo, fechas, estado y visibilidad.
+- **Tareas**, asociadas a proyectos.
+- **Solicitudes de proyecto**, que incluyen cliente, descripción y estado.
+- (Opcional) **Recursos asignados**, vinculados a proyectos y tareas.
+
+---
+
+## 5. Consideraciones adicionales
+
+- El sistema diferencia entre proyectos **internos y publicados**.
+- Solo los proyectos finalizados y marcados como visibles aparecerán en la parte pública.
+- Se mantiene un histórico completo de proyectos.
+- Se permite la planificación mediante tareas y asignación de recursos.
+- Se aplican filtros para facilitar la gestión.
+- Se garantiza la coherencia con los datos comunes mediante API.

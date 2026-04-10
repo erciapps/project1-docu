@@ -1,0 +1,130 @@
+---
+sidebar_position: 2
+---
+
+# Departamento de Consultoría Tecnológica
+
+El departamento de Consultoría Tecnológica tiene como objetivo principal ofrecer servicios de análisis, asesoramiento y mejora de sistemas tecnológicos a clientes externos. Este departamento permite gestionar solicitudes de consultoría, así como publicar información sobre los servicios ofrecidos por la empresa.
+
+Para ello, se ha diseñado un sistema dividido en una **parte pública** y una **parte privada**, garantizando tanto el acceso a la información de servicios como la gestión interna segura mediante autenticación.
+
+---
+
+## 1. Parte pública
+
+La parte pública del sistema es accesible sin necesidad de iniciar sesión y permite mostrar información general del departamento, así como los servicios de consultoría disponibles.
+
+Esta sección incluye las siguientes funcionalidades:
+
+- Presentación del departamento, donde se describe su función dentro de la empresa y los servicios que ofrece.
+- Listado de servicios de consultoría, mostrando información básica como el nombre del servicio, categoría y descripción breve.
+- Detalle de cada servicio, con información ampliada como objetivos, alcance, tecnologías implicadas y posibles beneficios para el cliente.
+- Formulario de solicitud de consultoría, que permite a los usuarios interesados solicitar información o iniciar un servicio.
+
+Únicamente se mostrarán en esta sección los servicios que se encuentren en estado **activo**, quedando ocultos aquellos que hayan sido deshabilitados.
+
+---
+
+## 2. Parte privada
+
+La parte privada del sistema es accesible mediante autenticación a través de un sistema centralizado (por ejemplo, Keycloak). En esta zona se diferencian dos perfiles de usuario: **administrador** y **cliente/empleado**.
+
+---
+
+### 2.1. Funcionalidades del administrador
+
+El administrador del departamento de Consultoría Tecnológica dispone de acceso completo a la gestión interna del sistema.
+
+#### Gestión de servicios de consultoría
+
+El sistema permite:
+
+- Crear nuevos servicios de consultoría.
+- Consultar el listado y el detalle de los servicios.
+- Modificar servicios existentes.
+- Eliminar servicios en casos excepcionales, como registros erróneos o duplicados.
+- Desactivar servicios, cambiando su estado (**activo o inactivo**) para que dejen de estar visibles en la parte pública sin perder su información.
+
+El listado de servicios permite aplicar filtros básicos, como:
+
+- Estado del servicio (activo o inactivo)
+- Categoría del servicio
+- Sede asociada
+- Rango de fechas de creación
+
+Los servicios se gestionan teniendo en cuenta datos comunes de la empresa obtenidos mediante API, como los **departamentos** y las **sedes**.
+
+---
+
+#### Gestión de solicitudes de consultoría
+
+El administrador puede:
+
+- Consultar todas las solicitudes de consultoría realizadas por los usuarios.
+- Filtrar solicitudes por:
+  - Cliente o empleado
+  - Estado (pendiente, en proceso o finalizada)
+  - Tipo de servicio solicitado
+  - Rango de fechas
+- Cambiar el estado de una solicitud.
+- Asignar responsables o consultores.
+- Añadir comentarios o respuestas a la solicitud.
+
+Cada solicitud tendrá:
+
+- Un estado definido: **pendiente, en proceso o finalizada**
+- Un servicio asociado
+
+Esto permite una gestión estructurada y el seguimiento del ciclo de vida del servicio.
+
+---
+
+### 2.2. Funcionalidades del cliente/empleado
+
+El usuario (cliente o empleado) dispone de un portal privado desde el cual puede interactuar con el sistema de consultoría.
+
+Este portal permite:
+
+- Crear nuevas solicitudes de consultoría, indicando el servicio, descripción de la necesidad y datos de contacto.
+- Consultar el estado de sus solicitudes.
+- Ver el detalle y la evolución de cada solicitud.
+
+El usuario no tiene permisos para modificar el estado de las solicitudes, ya que esta acción corresponde exclusivamente al administrador.
+
+---
+
+## 3. Integración con datos comunes
+
+El sistema se integra con una API externa para obtener información común de la empresa, concretamente:
+
+- Departamentos  
+- Empleados  
+- Sedes  
+
+Estos datos se utilizan para:
+
+- Asociar servicios a una sede o departamento.
+- Identificar al usuario que realiza una solicitud.
+- Asignar responsables dentro de la organización.
+
+---
+
+## 4. Base de datos del departamento
+
+El departamento de Consultoría Tecnológica dispone de una base de datos propia en PostgreSQL, en la que se almacena exclusivamente la información específica de este módulo.
+
+Las principales entidades son:
+
+- **Servicios de consultoría**, con información como nombre, descripción, categoría, sede, fechas y estado (activo o inactivo).
+- **Solicitudes de consultoría**, que incluyen el servicio solicitado, usuario, estado (pendiente, en proceso o finalizada), descripción y comentarios.
+- **Mensajes o comunicaciones**, para gestionar la interacción entre cliente y consultor.
+
+---
+
+## 5. Consideraciones adicionales
+
+- El sistema diferencia claramente entre servicios **activos e inactivos**, evitando eliminar información de forma innecesaria y permitiendo mantener un histórico.
+- La operación de eliminación se limita a casos excepcionales, garantizando la integridad de los datos.
+- Se implementa un sistema de **filtrado de datos** en los listados para facilitar la gestión por parte del administrador.
+- La separación entre zona pública y privada garantiza la seguridad y el control de acceso a la información sensible.
+- El uso de APIs externas permite mantener la coherencia con los datos comunes de la empresa sin duplicarlos.

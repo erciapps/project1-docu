@@ -1,0 +1,121 @@
+---
+sidebar_position: 5
+---
+
+# Departamento de Formación
+
+El departamento de Formación tiene como objetivo principal ofrecer cursos, talleres y certificaciones tecnológicas dirigidas a clientes y empleados, permitiendo mejorar sus competencias en distintos ámbitos.
+
+Para ello, se ha diseñado un sistema dividido en una **parte pública** y una **parte privada**, facilitando tanto la consulta de la oferta formativa como la gestión de inscripciones y seguimiento de los cursos.
+
+---
+
+## 1. Parte pública
+
+La parte pública del sistema es accesible sin necesidad de iniciar sesión y permite mostrar información general del departamento, así como el catálogo de cursos disponibles.
+
+Esta sección incluye las siguientes funcionalidades:
+
+- Presentación del departamento, donde se describen los servicios formativos ofrecidos (cursos, talleres y certificaciones).
+- Catálogo de cursos, mostrando información básica como título, categoría, duración y modalidad.
+- Detalle de cada curso, incluyendo contenido, objetivos, requisitos, fechas y modalidad (presencial/online).
+- Formulario de inscripción, que permite a los usuarios registrarse en un curso.
+
+Únicamente se mostrarán en esta sección los cursos que se encuentren en estado **activo**, quedando ocultos aquellos que no estén disponibles.
+
+---
+
+## 2. Parte privada
+
+La parte privada del sistema es accesible mediante autenticación y distingue dos perfiles: **administrador** y **cliente/empleado**.
+
+---
+
+### 2.1. Funcionalidades del administrador
+
+#### Gestión de cursos
+
+El sistema permite:
+
+- Crear nuevos cursos.
+- Consultar el listado y detalle de cursos.
+- Modificar cursos existentes.
+- Eliminar cursos en casos excepcionales.
+- Activar o desactivar cursos (**activo/inactivo**).
+
+Filtros disponibles:
+
+- Categoría del curso
+- Estado
+- Modalidad (online/presencial)
+- Rango de fechas
+
+---
+
+#### Gestión de inscripciones
+
+El administrador puede:
+
+- Consultar inscripciones a cursos.
+- Filtrar por:
+  - Usuario
+  - Estado (pendiente, confirmada, cancelada, finalizada)
+  - Curso
+  - Fechas
+- Confirmar o cancelar inscripciones.
+- Añadir observaciones.
+
+Cada inscripción tendrá:
+
+- Estado: **pendiente, confirmada, cancelada, finalizada**
+- Curso asociado
+- Usuario inscrito
+
+---
+
+### 2.2. Funcionalidades del cliente/empleado
+
+El usuario dispone de un portal privado desde el cual puede:
+
+- Inscribirse en cursos.
+- Consultar sus inscripciones.
+- Ver el estado de cada inscripción.
+- Acceder al detalle del curso.
+
+El usuario no puede modificar el estado de las inscripciones.
+
+---
+
+## 3. Integración con datos comunes
+
+El sistema se integra con la API para obtener:
+
+- Departamentos  
+- Empleados  
+- Sedes  
+
+Estos datos se utilizan para:
+
+- Identificar al usuario inscrito
+- Asociar cursos a sedes
+- Gestionar responsables de formación
+
+---
+
+## 4. Base de datos del departamento
+
+Las principales entidades son:
+
+- **Cursos**, con información como título, descripción, categoría, fechas, modalidad y estado.
+- **Inscripciones**, que incluyen usuario, curso, estado y observaciones.
+- (Opcional) **Certificaciones**, asociadas a cursos completados.
+
+---
+
+## 5. Consideraciones adicionales
+
+- El sistema diferencia entre cursos **activos e inactivos**.
+- Se mantiene un histórico de inscripciones.
+- Se implementan filtros para facilitar la gestión.
+- Se separa claramente la gestión de cursos de la gestión de inscripciones.
+- Se garantiza la coherencia con los datos comunes mediante API.

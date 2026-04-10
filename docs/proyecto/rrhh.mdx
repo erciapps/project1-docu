@@ -1,0 +1,126 @@
+---
+sidebar_position: 1
+---
+
+# Departamento de Recursos Humanos
+
+El departamento de Recursos Humanos tiene como objetivo principal la gestión de ofertas de empleo de la empresa y la administración de solicitudes de vacaciones y permisos del personal. Para ello, se ha diseñado un sistema dividido en una **parte pública** y una **parte privada**, garantizando tanto el acceso abierto a la información como la gestión interna segura mediante autenticación.
+
+---
+
+## 1. Parte pública
+
+La parte pública del sistema es accesible sin necesidad de iniciar sesión y permite mostrar información general del departamento, así como las ofertas de empleo activas.
+
+Esta sección incluye las siguientes funcionalidades:
+
+- Presentación del departamento, donde se describe su función dentro de la empresa.
+- Listado de ofertas de empleo activas, mostrando información básica como el título, departamento, sede y fecha de publicación.
+- Detalle de cada oferta, con información ampliada como descripción del puesto, condiciones y requisitos.
+- Formulario de contacto, que permite a los usuarios enviar consultas relacionadas con las ofertas o el departamento.
+
+Únicamente se mostrarán en esta sección las ofertas que se encuentren en estado **activo**, quedando ocultas aquellas que hayan sido cerradas.
+
+---
+
+## 2. Parte privada
+
+La parte privada del sistema es accesible mediante autenticación a través de un sistema centralizado (por ejemplo, Keycloak). En esta zona se diferencian dos perfiles de usuario: **administrador** y **empleado**.
+
+---
+
+### 2.1. Funcionalidades del administrador
+
+El administrador del departamento de Recursos Humanos dispone de acceso completo a la gestión interna del sistema.
+
+#### Gestión de ofertas de empleo
+
+El sistema permite:
+
+- Crear nuevas ofertas de empleo.
+- Consultar el listado y el detalle de las ofertas.
+- Modificar ofertas existentes.
+- Eliminar ofertas en casos excepcionales, como registros erróneos o duplicados.
+- Cerrar ofertas, cambiando su estado (**activa o cerrada**) para que dejen de estar visibles en la parte pública sin perder su información.
+
+El listado de ofertas permite aplicar filtros básicos, como:
+
+- Estado de la oferta (activa o cerrada)
+- Departamento
+- Sede
+- Rango de fechas de publicación
+
+Las ofertas se gestionan teniendo en cuenta datos comunes de la empresa obtenidos mediante API, como los **departamentos** y las **sedes**.
+
+---
+
+#### Gestión de solicitudes del personal
+
+El administrador puede:
+
+- Consultar todas las solicitudes de vacaciones y permisos.
+- Filtrar solicitudes por:
+  - Empleado
+  - Estado (pendiente, aprobada o rechazada)
+  - Tipo de solicitud (vacaciones o permisos)
+  - Rango de fechas
+- Cambiar el estado de una solicitud.
+- Añadir comentarios de resolución.
+
+Cada solicitud tendrá:
+
+- Un estado definido: **pendiente, aprobada o rechazada**
+- Un tipo asociado: **vacaciones o permiso**
+
+Esto permite una gestión estructurada y clara de las mismas.
+
+---
+
+### 2.2. Funcionalidades del empleado
+
+El empleado dispone de un portal privado desde el cual puede interactuar con el sistema de solicitudes.
+
+Este portal permite:
+
+- Crear nuevas solicitudes de vacaciones o permisos, indicando tipo, fechas y motivo.
+- Consultar el estado de sus solicitudes.
+- Ver el detalle y la resolución de cada solicitud.
+
+El empleado no tiene permisos para modificar el estado de las solicitudes, ya que esta acción corresponde exclusivamente al administrador.
+
+---
+
+## 3. Integración con datos comunes
+
+El sistema se integra con una API externa para obtener información común de la empresa, concretamente:
+
+- Departamentos
+- Empleados
+- Sedes
+
+Estos datos se utilizan para:
+
+- Asociar ofertas de empleo a un departamento y sede.
+- Identificar al empleado que realiza una solicitud.
+
+---
+
+## 4. Base de datos del departamento
+
+El departamento de Recursos Humanos dispone de una base de datos propia en PostgreSQL, en la que se almacena exclusivamente la información específica de este módulo.
+
+Las principales entidades son:
+
+- **Ofertas de empleo**, con información como título, descripción, departamento, sede, fechas y estado (activa o cerrada).
+- **Solicitudes del personal**, que incluyen el tipo de solicitud, fechas, estado (pendiente, aprobada o rechazada), empleado asociado y comentarios de resolución.
+- (Opcional) **Mensajes de contacto**, para gestionar las consultas recibidas desde la parte pública.
+
+---
+
+## 5. Consideraciones adicionales
+
+- El sistema diferencia claramente entre ofertas **activas y cerradas**, evitando eliminar información de forma innecesaria y permitiendo mantener un histórico.
+- La operación de eliminación se limita a casos excepcionales, garantizando la integridad de los datos.
+- Se implementa un sistema de **filtrado de datos** en los listados para facilitar la gestión por parte del administrador.
+- La separación entre zona pública y privada garantiza la seguridad y el control de acceso a la información sensible.
+- El uso de APIs externas permite mantener la coherencia con los datos comunes de la empresa sin duplicarlos.

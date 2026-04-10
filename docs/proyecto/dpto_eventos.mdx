@@ -1,0 +1,125 @@
+---
+sidebar_position: 21
+---
+
+# Departamento de Eventos y Actividades Corporativas
+
+El departamento de Eventos y Actividades Corporativas tiene como objetivo principal organizar y gestionar eventos relacionados con los servicios de la empresa, como jornadas técnicas, presentaciones, seminarios o actividades corporativas.
+
+Este departamento permite planificar eventos, gestionar inscripciones y facilitar la participación de clientes y empleados.
+
+Para ello, se ha diseñado un sistema dividido en una **parte pública** y una **parte privada**, permitiendo tanto la consulta de eventos como su gestión interna.
+
+---
+
+## 1. Parte pública
+
+La parte pública del sistema es accesible sin necesidad de iniciar sesión y permite mostrar información general del departamento, así como los eventos disponibles.
+
+Esta sección incluye las siguientes funcionalidades:
+
+- Presentación del departamento, donde se describen las actividades organizadas (eventos, jornadas, seminarios, etc.).
+- Listado de eventos, mostrando información básica como nombre, fecha, tipo y ubicación.
+- Detalle de cada evento, incluyendo descripción, objetivos, programa y requisitos.
+- Formulario de inscripción a eventos.
+- Consulta del estado de una inscripción mediante un identificador.
+
+Únicamente se mostrarán en esta sección los eventos que se encuentren en estado **activo**.
+
+---
+
+## 2. Parte privada
+
+La parte privada del sistema es accesible mediante autenticación y distingue dos perfiles: **administrador** y **cliente/empleado**.
+
+---
+
+### 2.1. Funcionalidades del administrador
+
+#### Gestión de eventos
+
+El sistema permite:
+
+- Crear nuevos eventos.
+- Consultar el listado y detalle de eventos.
+- Modificar eventos existentes.
+- Eliminar eventos en casos excepcionales.
+- Activar o desactivar eventos (**activo/inactivo**).
+
+Filtros disponibles:
+
+- Tipo de evento
+- Estado
+- Sede
+- Rango de fechas
+
+---
+
+#### Gestión de inscripciones
+
+El administrador puede:
+
+- Consultar inscripciones a eventos.
+- Filtrar por:
+  - Usuario
+  - Estado (pendiente, confirmada, cancelada, asistida)
+  - Evento
+  - Fecha
+- Confirmar o cancelar inscripciones.
+- Registrar asistencia.
+- Añadir observaciones.
+
+Cada inscripción tendrá:
+
+- Estado: **pendiente, confirmada, cancelada, asistida**
+- Evento asociado
+- Usuario inscrito
+
+---
+
+### 2.2. Funcionalidades del cliente/empleado
+
+El usuario dispone de un portal privado desde el cual puede:
+
+- Inscribirse en eventos.
+- Consultar sus inscripciones.
+- Ver el estado de cada inscripción.
+- Acceder al detalle de los eventos.
+
+El usuario no puede modificar el estado de las inscripciones.
+
+---
+
+## 3. Integración con datos comunes
+
+El sistema se integra con la API para obtener:
+
+- Departamentos  
+- Empleados  
+- Sedes  
+
+Estos datos se utilizan para:
+
+- Asociar eventos a sedes
+- Identificar participantes
+- Gestionar responsables del evento
+
+---
+
+## 4. Base de datos del departamento
+
+Las principales entidades son:
+
+- **Eventos**, con información como nombre, descripción, fecha, ubicación y estado.
+- **Inscripciones**, que incluyen usuario, evento y estado.
+- **Asistencia**, para registrar participación.
+
+---
+
+## 5. Consideraciones adicionales
+
+- El sistema permite gestionar eventos de forma estructurada.
+- Se mantiene un histórico de eventos e inscripciones.
+- Se implementa control de estados y asistencia.
+- Se aplican filtros para facilitar la gestión.
+- Se garantiza la coherencia con los datos comunes mediante API.

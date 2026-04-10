@@ -1,0 +1,128 @@
+---
+sidebar_position: 15
+---
+
+# Departamento de Logística y Transporte
+
+El departamento de Logística y Transporte tiene como objetivo principal gestionar los servicios de recogida, entrega y traslado de materiales, equipos o documentación relacionados con los servicios prestados por la empresa.
+
+Este departamento permite planificar servicios logísticos, coordinar rutas y realizar el seguimiento de las solicitudes de transporte de manera organizada.
+
+Para ello, se ha diseñado un sistema dividido en una **parte pública** y una **parte privada**, facilitando tanto la consulta de servicios como la gestión de solicitudes y seguimientos.
+
+---
+
+## 1. Parte pública
+
+La parte pública del sistema es accesible sin necesidad de iniciar sesión y permite mostrar información general del departamento, así como los servicios logísticos disponibles.
+
+Esta sección incluye las siguientes funcionalidades:
+
+- Presentación del departamento, donde se describen los servicios ofrecidos (recogida, entrega, traslado de equipos o documentación, etc.).
+- Listado de servicios logísticos, mostrando información básica como tipo de servicio, descripción y cobertura.
+- Detalle de cada servicio, incluyendo condiciones, alcance y tiempos estimados.
+- Formulario de solicitud de transporte, donde el usuario puede indicar origen, destino, tipo de material y fecha deseada.
+- Seguimiento de servicio, permitiendo consultar el estado de una solicitud mediante un identificador.
+
+Únicamente se mostrarán en esta sección los servicios que se encuentren en estado **activo**.
+
+---
+
+## 2. Parte privada
+
+La parte privada del sistema es accesible mediante autenticación y distingue dos perfiles: **administrador** y **cliente/empleado**.
+
+---
+
+### 2.1. Funcionalidades del administrador
+
+#### Gestión de servicios logísticos
+
+El sistema permite:
+
+- Crear nuevos servicios logísticos.
+- Consultar el listado y el detalle de servicios.
+- Modificar servicios existentes.
+- Eliminar servicios en casos excepcionales.
+- Activar o desactivar servicios (**activo/inactivo**).
+
+Filtros disponibles:
+
+- Tipo de servicio
+- Estado
+- Sede
+- Rango de fechas
+
+---
+
+#### Gestión de solicitudes de transporte
+
+El administrador puede:
+
+- Consultar solicitudes de transporte.
+- Filtrar por:
+  - Cliente/empleado
+  - Estado (pendiente, en ruta, entregada, cancelada)
+  - Tipo de servicio
+  - Sede
+  - Rango de fechas
+- Cambiar el estado de la solicitud.
+- Asignar personal o vehículo.
+- Añadir observaciones o incidencias.
+
+Cada solicitud tendrá:
+
+- Estado: **pendiente, en ruta, entregada, cancelada**
+- Servicio asociado
+- Origen y destino
+- Fecha prevista
+
+---
+
+### 2.2. Funcionalidades del cliente/empleado
+
+El usuario dispone de un portal privado desde el cual puede:
+
+- Solicitar un servicio de transporte o traslado.
+- Consultar el estado de sus solicitudes.
+- Ver el detalle de cada servicio solicitado.
+- Acceder al historial de solicitudes.
+
+El usuario no puede modificar el estado de las solicitudes.
+
+---
+
+## 3. Integración con datos comunes
+
+El sistema se integra con la API para obtener:
+
+- Departamentos  
+- Empleados  
+- Sedes  
+
+Estos datos se utilizan para:
+
+- Identificar al usuario que realiza la solicitud
+- Asociar los servicios a sedes
+- Asignar personal responsable
+
+---
+
+## 4. Base de datos del departamento
+
+Las principales entidades son:
+
+- **Servicios logísticos**, con información como tipo, descripción, cobertura y estado.
+- **Solicitudes de transporte**, que incluyen usuario, origen, destino, estado y fechas.
+- (Opcional) **Incidencias logísticas**, asociadas a cada solicitud.
+
+---
+
+## 5. Consideraciones adicionales
+
+- El sistema diferencia entre servicios **activos e inactivos**.
+- Se mantiene un histórico de solicitudes de transporte.
+- Se implementa un sistema de seguimiento mediante identificador.
+- Se permite la asignación de personal o vehículos.
+- Se aplican filtros para facilitar la gestión.
+- Se garantiza la coherencia con los datos comunes mediante API.

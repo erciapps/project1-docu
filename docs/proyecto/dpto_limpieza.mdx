@@ -1,0 +1,126 @@
+---
+sidebar_position: 13
+---
+
+# Departamento de Servicios de Limpieza
+
+El departamento de Servicios de Limpieza tiene como objetivo principal ofrecer servicios de limpieza y mantenimiento de espacios a clientes, incluyendo limpieza periódica, puntual y especializada.
+
+Este departamento permite gestionar servicios, planificar intervenciones y atender solicitudes de limpieza de forma organizada.
+
+Para ello, se ha diseñado un sistema dividido en una **parte pública** y una **parte privada**, facilitando tanto la consulta de servicios como la gestión de solicitudes.
+
+---
+
+## 1. Parte pública
+
+La parte pública del sistema es accesible sin necesidad de iniciar sesión y permite mostrar información general del departamento, así como los servicios de limpieza disponibles.
+
+Esta sección incluye las siguientes funcionalidades:
+
+- Presentación del departamento, donde se describen los tipos de servicios ofrecidos (limpieza de oficinas, limpieza industrial, limpieza puntual, etc.).
+- Listado de servicios de limpieza, mostrando información básica como tipo de servicio, descripción y frecuencia.
+- Detalle de cada servicio, incluyendo características, condiciones y alcance.
+- Formulario de solicitud de servicio, donde el usuario puede solicitar una limpieza.
+- Solicitud de cita, permitiendo indicar fecha, horario y ubicación.
+
+Únicamente se mostrarán en esta sección los servicios que se encuentren en estado **activo**.
+
+---
+
+## 2. Parte privada
+
+La parte privada del sistema es accesible mediante autenticación y distingue dos perfiles: **administrador** y **cliente/empleado**.
+
+---
+
+### 2.1. Funcionalidades del administrador
+
+#### Gestión de servicios de limpieza
+
+El sistema permite:
+
+- Crear nuevos servicios de limpieza.
+- Consultar el listado y el detalle de servicios.
+- Modificar servicios existentes.
+- Eliminar servicios en casos excepcionales.
+- Activar o desactivar servicios (**activo/inactivo**).
+
+Filtros disponibles:
+
+- Tipo de servicio
+- Estado
+- Sede
+- Rango de fechas
+
+---
+
+#### Gestión de solicitudes de limpieza
+
+El administrador puede:
+
+- Consultar solicitudes de limpieza.
+- Filtrar por:
+  - Cliente/empleado
+  - Estado (pendiente, en proceso, finalizada, cancelada)
+  - Tipo de servicio
+  - Rango de fechas
+- Cambiar el estado de la solicitud.
+- Asignar personal de limpieza.
+- Añadir comentarios o incidencias.
+
+Cada solicitud tendrá:
+
+- Estado: **pendiente, en proceso, finalizada, cancelada**
+- Servicio asociado
+- Fecha de intervención
+- Personal asignado
+
+---
+
+### 2.2. Funcionalidades del cliente/empleado
+
+El usuario dispone de un portal privado desde el cual puede:
+
+- Solicitar un servicio de limpieza.
+- Consultar el estado de sus solicitudes.
+- Ver el detalle de cada servicio solicitado.
+- Acceder al historial de servicios.
+
+El usuario no puede modificar el estado de las solicitudes.
+
+---
+
+## 3. Integración con datos comunes
+
+El sistema se integra con la API para obtener:
+
+- Departamentos  
+- Empleados  
+- Sedes  
+
+Estos datos se utilizan para:
+
+- Identificar al usuario que solicita el servicio
+- Asignar personal responsable
+- Asociar servicios a sedes
+
+---
+
+## 4. Base de datos del departamento
+
+Las principales entidades son:
+
+- **Servicios de limpieza**, con información como tipo, descripción, frecuencia y estado.
+- **Solicitudes de limpieza**, que incluyen usuario, servicio, estado, fechas y personal asignado.
+- (Opcional) **Incidencias**, relacionadas con servicios realizados.
+
+---
+
+## 5. Consideraciones adicionales
+
+- El sistema diferencia entre servicios **activos e inactivos**.
+- Se mantiene un histórico de servicios realizados.
+- Se permite la asignación de personal a cada solicitud.
+- Se implementa filtrado para facilitar la gestión.
+- Se garantiza la coherencia con los datos comunes mediante API.

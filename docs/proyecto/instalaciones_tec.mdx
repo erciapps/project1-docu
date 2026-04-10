@@ -1,0 +1,118 @@
+---
+sidebar_position: 3
+---
+
+# Departamento de Instalaciones Técnicas
+
+El departamento de Instalaciones Técnicas tiene como objetivo principal la planificación, ejecución y gestión de instalaciones tecnológicas para clientes, incluyendo redes, hardware y sistemas informáticos.
+
+Para ello, se ha diseñado un sistema dividido en una **parte pública** y una **parte privada**, permitiendo tanto la consulta de servicios como la gestión interna de solicitudes e intervenciones.
+
+---
+
+## 1. Parte pública
+
+La parte pública del sistema es accesible sin necesidad de iniciar sesión y permite mostrar información general del departamento, así como los servicios de instalación disponibles.
+
+Esta sección incluye las siguientes funcionalidades:
+
+- Presentación del departamento, donde se describen los servicios ofrecidos (instalación de redes, equipos y sistemas).
+- Listado de servicios disponibles, mostrando información básica como tipo de instalación, descripción y alcance.
+- Detalle de cada servicio, incluyendo requisitos, duración estimada y características técnicas.
+- Formulario de solicitud de instalación, que permite a los usuarios solicitar una intervención.
+- Solicitud de cita, donde el usuario puede indicar fecha y disponibilidad.
+
+Únicamente se mostrarán en esta sección los servicios que se encuentren en estado **activo**.
+
+---
+
+## 2. Parte privada
+
+La parte privada del sistema es accesible mediante autenticación. Se diferencian dos perfiles: **administrador** y **cliente/empleado**.
+
+---
+
+### 2.1. Funcionalidades del administrador
+
+#### Gestión de servicios de instalación
+
+El sistema permite:
+
+- Crear nuevos servicios de instalación.
+- Consultar el listado y detalle de servicios.
+- Modificar servicios existentes.
+- Eliminar servicios en casos excepcionales.
+- Desactivar servicios (**activo/inactivo**).
+
+Filtros disponibles:
+
+- Tipo de instalación (red, hardware, sistemas)
+- Estado
+- Sede
+- Fecha
+
+---
+
+#### Gestión de solicitudes de instalación
+
+El administrador puede:
+
+- Consultar solicitudes de instalación.
+- Filtrar por:
+  - Cliente/empleado
+  - Estado (pendiente, en proceso, finalizada)
+  - Tipo de servicio
+  - Fechas
+- Cambiar el estado de la solicitud.
+- Asignar técnicos responsables.
+- Añadir comentarios.
+
+Cada solicitud tendrá:
+
+- Estado: **pendiente, en proceso, finalizada**
+- Fecha de intervención
+- Servicio asociado
+
+---
+
+### 2.2. Funcionalidades del cliente/empleado
+
+El usuario puede:
+
+- Solicitar una instalación.
+- Solicitar cita.
+- Consultar el estado de sus solicitudes.
+- Ver el detalle de cada intervención.
+
+---
+
+## 3. Integración con datos comunes
+
+Se utilizarán datos de:
+
+- Departamentos  
+- Empleados  
+- Sedes  
+
+Para:
+
+- Asignar técnicos
+- Identificar solicitudes
+- Asociar instalaciones a sedes
+
+---
+
+## 4. Base de datos del departamento
+
+- **Servicios de instalación**
+- **Solicitudes de instalación**
+- (Opcional) **Citas**
+
+---
+
+## 5. Consideraciones adicionales
+
+- Gestión mediante estados.
+- Separación clara entre servicios y solicitudes.
+- Filtrado para facilitar la gestión.
+- Conservación de histórico.
