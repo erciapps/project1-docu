@@ -1,0 +1,235 @@
+---
+sidebar_position: 1
+---
+
+# Instrucciones proyecto intermodular (1º DAM)
+
+Este documento recoge las instrucciones y normas que deben seguir los grupos para el desarrollo del proyecto intermodular. 
+El objetivo es trabajar de forma organizada, documentar el proceso y aplicar herramientas reales de desarrollo.
+
+:::danger AVISO
+**TODOS LOS DÍAS A LAS 21:00 SE PARARÁ EL DEL PROYECTO PARA REGISTRAR EN LA MEMORIA Y EN EL TABLERO DE PLANKA TODO EL DESARROLLO DEL PROYECTO EN LA SESIÓN**
+:::
+
+## 1. Máquinas virtuales para el desarrollo
+Cada grupo dispone de una máquina virtual para realizar las pruebas y puesta en producción de la aplicación.
+- Para acceder al menú principal de máquinas principales, pulsar el icono de la casa desde guacamole.
+<figure>
+  <img src="/img/menuguacamole.png" alt="menuguacamole" width="200" />
+</figure>
+- Acceso mediante un único usuario (alumno).
+- Es posible conectarse de forma simultánea mediante VNC.
+:::warning
+- Con VNC Ambos integrantes comparten la misma sesión (ven lo mismo).
+- Para vnc es necesario haber iniciado sesión con la cuenta principal.
+- En caso de no funcionar vnc, reiniciar el sercivio con:
+```
+sudo systemctl restart x11vnc
+```
+:::
+
+
+Se debe utilizar esta máquina para:
+- Probar el proyecto en Docker.
+- Verificar integración de servicios.
+- Realizar pruebas reales.
+
+**ANTES DE INSTALAR CUALQUIER SOFTWARE EXTRA, AVISAD DE ELLO**
+
+---
+
+## 2. Planka (gestión del proyecto)
+Cada grupo dispone de un tablero en Planka.
+
+Al inicio de cada sesión:
+- Revisar el estado del tablero.
+- Identificar tareas pendientes.
+- Asignar tareas a cada integrante.
+
+Al final de la sesión:
+- Actualizar el estado real del proyecto.
+
+Regla:
+Si una tarea no está en Planka, no existe.
+
+### ES OBLIGATORIO indicar a que integrante pertenece una tarea
+<figure>
+  <img src="/img/planka2.png" alt="planka2" width="800" />
+</figure>
+
+### Al iniciar y finalizar una tarea hay que añadir un comentario
+<figure>
+  <img src="/img/planka.png" alt="planka" width="800" />
+</figure>
+
+## Ejemplo tareas:
+
+:::danger
+
+Las tareas deben ser concretas y verificables.
+
+No se aceptan tareas como:
+- "hacer backend"
+- "avanzar proyecto"
+- "hacer cosas"
+
+Cada tarea debe representar una acción clara y comprobable.
+:::
+
+### Tareas de análisis y diseño
+- Definir usuarios del sistema (ADMIN / EMPLEADO)
+- Definir funcionalidades de la parte pública
+- Definir funcionalidades del panel ADMIN
+- Definir funcionalidades del panel EMPLEADO
+- Crear bocetos
+- Diseñar diagrama entidad-relación
+- Definir tablas principales de la base de datos
+
+### Tareas de base de datos
+- Crear tabla usuarios
+- Crear tabla roles
+- Crear relación usuario-rol
+- Crear tabla principal del departamento
+- Crear tabla solicitudes
+- Crear tabla mensajes/contacto
+- Crear claves primarias y foráneas
+- Crear script SQL inicial
+- Insertar datos de prueba
+- Crear procedimiento almacenado de login
+- Crear procedimiento para registrar usuario
+- Crear procedimiento para crear solicitud
+
+
+### Tareas de login (Flask)
+- Crear formulario de login
+- Conectar Flask con PostgreSQL
+- Implementar validación de usuario
+- Implementar comprobación de rol
+- Redirigir según rol (ADMIN / EMPLEADO)
+- Implementar cierre de sesión
+- Probar login correcto
+- Probar login incorrecto
+
+
+### Tareas de Nginx y rutas
+- Configurar Nginx como reverse proxy
+- Configurar ruta pública de inicio
+- Configurar ruta pública de login
+- Configurar ruta privada de administración
+- Configurar ruta privada de empleados
+- Bloquear acceso sin autenticación
+- Probar acceso a rutas públicas
+- Probar acceso a rutas privadas
+
+### Tareas de Docker
+- Crear docker-compose.yml
+- Crear contenedor Flask
+- Crear contenedor PostgreSQL
+- Crear contenedor Nginx
+- Crear contenedor PHP
+- Crear contenedor Java
+- Configurar red Docker
+- Probar arranque del proyecto completo
+
+
+### Tareas de frontend / interfaces
+- Crear página principal
+- Crear página de información
+- Crear formulario de contacto
+- Crear formulario de solicitud
+- Crear listado de elementos
+- Crear pantalla de detalle
+- Conectar frontend con backend
+
+
+### Tareas de pruebas
+- Probar login ADMIN
+- Probar login EMPLEADO
+- Probar rutas protegidas
+- Probar inserción en base de datos
+- Probar formularios
+- Detectar errores
+- Corregir errores
+
+
+### Tareas de documentación
+- Crear memoria del proyecto
+- Añadir bocetos a la memoria
+- Añadir diagrama de base de datos
+- Añadir esquema de arquitectura
+- Actualizar sesiones de trabajo
+- Añadir capturas de Planka
+
+---
+
+## 3. Gitercilla (control de versiones)
+El uso de Git es obligatorio.
+<figure>
+  <img src="/img/gitercilla2.png" alt="gitercilla2" width="800" />
+</figure>
+### Estructura del repositorio:
+nombre-proyecto
+- php
+  - codigo
+  - docker
+- java
+  - codigo
+  - docker
+- python
+  - codigo
+  - docker
+- database
+  - java.db
+  - php.db
+  - python.db
+- README.md
+
+### Normas:
+- Mínimo un commit diario por alumno.
+- Los commits deben describir el trabajo realizado.
+- Uso de ramas:
+  - main (producción)
+  - dev (integración)
+  - ramas individuales
+
+- Flujo de trabajo:
+  ramas individuales → dev → main
+
+No se permite subir todo el proyecto el último día.
+
+---
+
+## 4. Desarrollo de memoria y registro de sesiones
+Los equipos disponen en el apartado de **Cloud**, un documento compartido con la estructura de la memoria, la cual se tendrá
+que ir adaptando y completando de forma diaría.   
+
+Cada grupo debe registrar todas las sesiones de trabajo en la memoria del proyecto.
+
+En cada sesión se debe incluir:
+
+- Trabajo realizado (con detalle técnico).
+- Problemas encontrados.
+- Soluciones aplicadas.
+- Estado del proyecto.
+- Próximos pasos.
+- Reparto de tareas.
+- Captura del tablero de Planka.
+
+
+No se aceptarán descripciones genéricas como:
+“hemos avanzado” o “todo funciona”.
+
+
+---
+
+
+
+## 5. Normas generales
+
+- El proyecto debe desarrollarse de forma progresiva.
+- No se permite realizar todo el trabajo al final.
+- Se evaluará el proceso, no solo el resultado final.
+- El uso de Docker, Git y Planka es obligatorio.
+- La memoria debe reflejar el trabajo real del grupo.
+
+---
