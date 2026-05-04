@@ -1,0 +1,73 @@
+---
+sidebar_position: 3
+---
+
+# Requisitos del proyecto
+
+## Requisito común: relación con empleados
+
+Todas las aplicaciones deberán trabajar con empleados del sistema.
+
+La información de los empleados no se duplicará en la base de datos propia de cada aplicación.  
+Cada aplicación guardará únicamente el identificador del empleado (`id_empleado`) cuando necesite relacionar una acción, solicitud, registro o elemento con un usuario.
+
+La información completa del empleado se obtendrá mediante una petición HTTP al servidor Flask.
+
+Para consultar los datos de un empleado, la aplicación deberá llamar a la ruta protegida correspondiente del servicio Flask.  
+Esta consulta solo podrá realizarse si el usuario tiene rol `ADMIN`.
+
+- La base de datos de cada aplicación tendrá campos como `id_empleado`.
+- Los datos personales del empleado se consultarán desde Flask.
+- El acceso a la información de empleados estará protegido.
+- Solo los usuarios con rol `ADMIN` podrán consultar información completa de empleados.
+
+### Ejemplo: aplicación de mantenimiento
+
+En una aplicación de mantenimiento, el administrador puede registrar incidencias y asignarlas a un empleado.
+
+La base de datos propia de la aplicación **no guarda los datos completos del empleado**.  
+Solo guarda el identificador del empleado asignado.
+
+Ejemplo de tabla `incidencias`:
+
+| id_incidencia | titulo | descripcion | estado | id_empleado_asignado |
+|---|---|---|---|---|
+| 1 | Proyector no funciona | El proyector del aula 204 no enciende | Pendiente | 5 |
+
+En este caso, la incidencia está asignada al empleado con `id_empleado = 5`.
+
+Para mostrar los datos completos del empleado asignado, la aplicación realiza una petición HTTP al servidor Flask:
+
+```http
+GET /empleados/5
+```
+
+El servidor Flask comprueba que el usuario que realiza la petición tiene rol ADMIN.
+
+Si tiene permiso, devuelve los datos del empleado en formato JSON:
+``` JSON
+{
+  "id_empleado": 5,
+  "nombre": "Laura",
+  "apellidos": "García López",
+  "correo": "laura.garcia@ercitech.dam",
+  "departamento": "Mantenimiento",
+  "sede": "Toledo"
+}
+```
+
+- El administrador asigna la incidencia a un empleado.
+- La aplicación guarda solo el id_empleado_asignado.
+- Los datos completos del empleado se consultan desde Flask.
+- La consulta está protegida y requiere rol ADMIN.
+
+
+<div style={{
+  backgroundColor: "white",
+  display: "inline-block",
+  padding: "12px",
+  borderRadius: "8px"
+}}>
+  <img src="/img/empleados.png" alt="empleados" width="980" />
+</div>
+
