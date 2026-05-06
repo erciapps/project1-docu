@@ -105,22 +105,22 @@ Ejemplo de respuesta JSON:
 {
   "data": [
     {
-      "id": "1",
+      "id": 1,
       "nombre": "Recursos Humanos",
       "descripcion": "Gestión de personal, contratación y desarrollo profesional"
     },
     {
-      "id": "2",
+      "id": 2,
       "nombre": "Consultoría",
       "descripcion": "Asesoramiento técnico y estratégico a clientes"
     },
     {
-      "id": "3",
+      "id": 3,
       "nombre": "Calidad",
       "descripcion": "Control de calidad, auditorías y mejora continua"
     },
     {
-      "id": "4",
+      "id": 4,
       "nombre": "Eventos",
       "descripcion": "Organización y gestión de eventos corporativos"
     }
@@ -152,7 +152,7 @@ Retorna:
 ```json
 {
   "data": {
-    "id": "3",
+    "id": 3,
     "nombre": "Delegación Barcelona",
     "direccion": "Carrer Diagonal 200",
     "ciudad": "Barcelona"
@@ -168,51 +168,234 @@ Por tanto, para acceder a la información real será necesario acceder primero a
 :::
 
 ## Adaptaciones en Flask
-1. Importar dependecia para realizar peticiones http:
 
-```
+## 1. Importar dependencias necesarias
+
+Para realizar peticiones HTTP a la API:
+
+```python
 import requests
 ```
 
-2. Dependencias para manejar json ():
+Para retornar respuestas JSON desde Flask:
 
-```
+```python
 from flask import jsonify
 ```
 
-Si lo prefieres puedes añadir esta dependecia al final del import de  `flask`:
-```
+También puedes añadir `jsonify` al import principal de Flask:
+
+```python
 from flask import Flask, render_template, request, redirect, url_for, session, jsonify
 ```
 
-3. Con el entorno virtual activado, ejecutar:
-```
-pip install request
+---
+
+## 2. Instalar dependencias
+
+Con el entorno virtual activado, ejecutar:
+
+```bash
+pip install requests
 ```
 
-4. Actualizar archivo de requerimientos ejecutando este comando desde la raiz del proyecto:
-```
+> El paquete correcto es `requests`, no `request`.
+
+---
+
+## 3. Actualizar archivo `requirements.txt`
+
+Desde la raíz del proyecto ejecutar:
+
+```bash
 pip freeze > requirements.txt
 ```
 
-5. Adaptar el método que retorna el formulario de registro:
+---
+
+## 4. Adaptar el método que carga el formulario de registro
+
+La aplicación debe obtener la lista de sedes y departamentos mediante peticiones HTTP a la API.
+
+Ejemplo:
+
 ```python
 @app.route("/form", methods=['GET'])
 def form():
+
     print("Has entrado en el formulario")
+
+    # Obtener sedes
     url = "http://info.empresa.dam.es:8055/items/sedes"
     respuesta = requests.get(url)
     datosSedes = respuesta.json()
 
+    # Obtener departamentos
     url = "http://info.empresa.dam.es:8055/items/departamentos"
     respuesta = requests.get(url)
     datosDepartamentos = respuesta.json()
 
-
-    return render_template("formulario.html", 
-                           departamentos=datosDepartamentos['data'],
-                           sedes=datosSedes['data'])
+    return render_template(
+        "formulario.html",
+        departamentos=datosDepartamentos['data'],
+        sedes=datosSedes['data']
+    )
 ```
 
-- Obtenemos la lista de redes y departamentos haciendo dos peticiones a la API.
-- La petición retorna un json de este estilo (tal y como ser ha indicaado antes en la ayuda):
+---
+
+## 5. Uso de sedes y departamentos en HTML
+
+La API retorna un JSON con una estructura similar a esta:
+
+```json
+{
+  "data": [
+    {
+      "id": 1,
+      "nombre": "Mantenimiento"
+    }
+  ]
+}
+```
+
+Por tanto, será necesario acceder a la clave `data`.
+
+---
+
+### Sedes
+
+```html
+<select name="id_sede" id="id_sede">
+
+    {% for sede in sedes %}
+
+        <option value="{{ sede.id }}">
+            {{ sede.nombre }}
+        </option>
+
+    {% endfor %}
+
+</select>
+```
+
+---
+
+### Departamentos
+
+```html
+<select name="id_dpto" id="id_dpto">
+
+    {% for dpto in departamentos %}
+
+        <option value="{{ dpto.id }}">
+            {{ dpto.nombre }}
+        </option>
+
+    {% endfor %}
+
+</select>
+```
+
+---
+
+## 6. Capturar datos enviados desde el formulario
+
+Ejemplo:
+
+```python
+id_dpto = int(request.form.get("id_dpto"))
+```
+
+```python
+id_sede = int(request.form.get("id_sede"))
+```
+
+Estos valores corresponden a los identificadores seleccionados en los `<select>` del formulario.
+
+:::note
+Será necesario adaptar el procedimiento almacenado para aceptar estos nuevos parámetros.
+:::
+
+---
+
+# Obtener empleados mediante API Flask
+
+La información de empleados debe obtenerse mediante la API desarrollada en Flask.
+
+La aplicación no debe acceder directamente a la base de datos de empleados desde otros servicios.
+
+---
+
+## Ejemplo de ruta protegida
+
+```python
+@app.route("/usuarios", methods=["GET"])
+@login_requerido
+def usuarios():
+
+    if session.get("user") == "admin" and session.get("roles") == "admin":
+
+        with get_conn() as conn:
+            with conn.cursor() as cur:
+
+                cur.execute("SELECT * FROM usuarios;")
+
+                filas = cur.fetchall()
+
+        return jsonify(filas)
+
+    else:
+        return f"No tienes permisos {session.get('user')}"
+```
+
+---
+
+## Funcionamiento
+
+1. El cliente realiza una petición GET a la ruta `/usuarios`.
+2. La ruta está protegida mediante `@login_requerido`.
+3. Flask comprueba que existe una sesión activa.
+4. Se obtienen los datos guardados en `session`.
+5. Se verifica que el usuario tenga rol `ADMIN`.
+6. Si tiene permisos:
+   - Se consulta la base de datos.
+   - Se retornan los datos en formato JSON.
+7. Si no tiene permisos:
+   - Se bloquea el acceso.
+
+---
+
+## Decorador `@login_requerido`
+
+El decorador `@login_requerido` permite proteger rutas privadas.
+
+Su objetivo es comprobar que el usuario ha iniciado sesión antes de acceder a determinadas páginas o recursos.
+
+Ejemplo:
+
+```python
+@login_requerido
+```
+
+Si no existe sesión activa:
+- El usuario no podrá acceder.
+- Flask podrá redirigir al login o bloquear el acceso.
+
+---
+
+## Uso de `session`
+
+Durante el login se almacenan datos en la sesión:
+
+```python
+session["user"] = usuario
+session["roles"] = rol
+```
+
+Estos valores pueden utilizarse posteriormente para:
+
+- Comprobar permisos.
+- Identificar al usuario autenticado.
+- Restringir acceso a rutas privadas.
+- Mostrar información personalizada.
