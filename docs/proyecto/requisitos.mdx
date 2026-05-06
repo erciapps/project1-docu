@@ -51,8 +51,8 @@ Si tiene permiso, devuelve los datos del empleado en formato JSON:
   "nombre": "Laura",
   "apellidos": "García López",
   "correo": "laura.garcia@ercitech.dam",
-  "departamento": "Mantenimiento",
-  "sede": "Toledo"
+  "id_departamento": 2,
+  "id_sede": 4
 }
 ```
 
@@ -71,3 +71,148 @@ Si tiene permiso, devuelve los datos del empleado en formato JSON:
   <img src="/img/empleados.png" alt="empleados" width="980" />
 </div>
 
+---
+
+## Requisito común: sedes y departamentos
+
+Las sedes y departamentos son recursos comunes compartidos por todas las aplicaciones del proyecto.
+
+La información de sedes y departamentos se obtendrá mediante peticiones HTTP a la API correspondiente.
+
+Las aplicaciones no deben guardar el nombre completo de la sede o departamento en sus tablas principales.  
+Únicamente se almacenarán sus identificadores:
+
+- `id_sede`
+- `id_departamento`
+
+Por ejemplo, al registrar un nuevo empleado desde el panel de administración:
+
+1. La aplicación realizará una petición HTTP para obtener la lista de sedes.
+2. La aplicación realizará una petición HTTP para obtener la lista de departamentos.
+3. El administrador seleccionará una sede y un departamento.
+4. La aplicación almacenará únicamente sus identificadores en la base de datos.
+
+Ejemplo:
+
+```http
+GET http://info.empresa.dam.es:8055/items/sedes
+GET http://info.empresa.dam.es:8055/items/departamentos
+```
+
+Ejemplo de respuesta JSON:
+
+```json
+{
+  "data": [
+    {
+      "id": "1",
+      "nombre": "Recursos Humanos",
+      "descripcion": "Gestión de personal, contratación y desarrollo profesional"
+    },
+    {
+      "id": "2",
+      "nombre": "Consultoría",
+      "descripcion": "Asesoramiento técnico y estratégico a clientes"
+    },
+    {
+      "id": "3",
+      "nombre": "Calidad",
+      "descripcion": "Control de calidad, auditorías y mejora continua"
+    },
+    {
+      "id": "4",
+      "nombre": "Eventos",
+      "descripcion": "Organización y gestión de eventos corporativos"
+    }
+  ]
+}
+```
+
+Ejemplo de tabla `empleados`:
+
+| id_empleado | nombre  | id_departamento | id_sede |
+|---|---|---|---|
+| 5 | Laura | 1 | 2 |
+
+En este caso:
+
+- `id_departamento = 1`
+- `id_sede = 2`
+
+* La aplicación deberá consultar la información completa mediante la API cuando necesite mostrar el nombre del departamento o la sede.
+
+
+* Para consultar una sede o departamento concreto hay que pasar el id en la propia ruta. Por ejemplo si quiero la sede con id=3, pondría:
+```http
+GET http://info.empresa.dam.es:8055/items/sedes/3
+```
+
+Retorna:
+
+```json
+{
+  "data": {
+    "id": "3",
+    "nombre": "Delegación Barcelona",
+    "direccion": "Carrer Diagonal 200",
+    "ciudad": "Barcelona"
+  }
+}
+```
+
+:::note A TENER EN CUENTA
+Las respuestas de la API siempre devuelven un objeto principal llamado `data`
+
+Por tanto, para acceder a la información real será necesario acceder primero a la clave `data`
+
+:::
+
+## Adaptaciones en Flask
+1. Importar dependecia para realizar peticiones http:
+
+```
+import requests
+```
+
+2. Dependencias para manejar json ():
+
+```
+from flask import jsonify
+```
+
+Si lo prefieres puedes añadir esta dependecia al final del import de  `flask`:
+```
+from flask import Flask, render_template, request, redirect, url_for, session, jsonify
+```
+
+3. Con el entorno virtual activado, ejecutar:
+```
+pip install request
+```
+
+4. Actualizar archivo de requerimientos ejecutando este comando desde la raiz del proyecto:
+```
+pip freeze > requirements.txt
+```
+
+5. Adaptar el método que retorna el formulario de registro:
+```python
+@app.route("/form", methods=['GET'])
+def form():
+    print("Has entrado en el formulario")
+    url = "http://info.empresa.dam.es:8055/items/sedes"
+    respuesta = requests.get(url)
+    datosSedes = respuesta.json()
+
+    url = "http://info.empresa.dam.es:8055/items/departamentos"
+    respuesta = requests.get(url)
+    datosDepartamentos = respuesta.json()
+
+
+    return render_template("formulario.html", 
+                           departamentos=datosDepartamentos['data'],
+                           sedes=datosSedes['data'])
+```
+
+- Obtenemos la lista de redes y departamentos haciendo dos peticiones a la API.
+- La petición retorna un json de este estilo (tal y como ser ha indicaado antes en la ayuda):
