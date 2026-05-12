@@ -1,0 +1,241 @@
+---
+sidebar_position: 2
+---
+
+# Automatizaciones con n8n
+
+En esta parte del proyecto vais a incorporar un nuevo servicio basado en **n8n**, desplegado mediante **Docker**, para automatizar algunas tareas relacionadas con vuestra aplicación.
+
+La idea no es simplemente “probar n8n”, sino usarlo para resolver necesidades reales de vuestro proyecto: avisos, análisis de mensajes, envío de correos, gestión de archivos o generación de documentos.
+
+Cada grupo deberá adaptar las automatizaciones a la temática de su aplicación. Por ejemplo, no tendrá el mismo sentido en una app de gestión de incidencias, una app de reservas, una plataforma de tareas, una tienda o una aplicación de administración interna.
+
+---
+
+## 1. Despliegue de n8n en Docker
+
+Deberéis añadir un servicio **n8n** a vuestro entorno de trabajo mediante Docker.
+
+Lo recomendable es integrarlo dentro del archivo `docker-compose.yml` junto al resto de servicios del proyecto, como pueden ser:
+
+- backend;
+- base de datos;
+- n8n;
+- Ollama;
+- servicios de almacenamiento;
+- servicios de generación de PDF.
+
+El servicio deberá arrancar correctamente, conservar sus datos mediante volúmenes y poder comunicarse con el resto de servicios necesarios del proyecto.
+
+También deberéis usar variables de entorno para la configuración sensible, evitando dejar contraseñas o tokens escritos directamente en los flujos o en el código.
+
+---
+
+# Funcionalidades a implementar
+
+Las **tres primeras opciones son obligatorias**. El resto son **optativas** y servirán para ampliar y mejorar el proyecto.
+
+---
+
+## Opciones obligatorias
+
+## 1. Análisis de estado de ánimo en mensajes con Ollama
+
+Deberéis crear un flujo en n8n que permita analizar mensajes relacionados con vuestra aplicación usando **Ollama**.
+
+El flujo deberá recibir uno o varios mensajes procedentes de la aplicación o del backend, enviarlos a Ollama y obtener una respuesta útil para el administrador.
+
+El análisis deberá incluir, como mínimo:
+
+- un resumen del contenido de los mensajes;
+- una valoración general del tono o estado de ánimo;
+- una clasificación sencilla, por ejemplo: positivo, negativo o neutro;
+- una alerta si se detecta un mensaje especialmente negativo, conflictivo o que requiera revisión.
+
+El resultado deberá enviarse o almacenarse de forma que el administrador pueda consultarlo.
+
+Por ejemplo:
+
+> Un usuario escribe varios mensajes en la aplicación. n8n recoge esos mensajes, los analiza con Ollama y envía al administrador un resumen indicando si hay algún mensaje que debería revisar.
+
+---
+
+## 2. Envío automático de correos electrónicos
+
+Deberéis crear un flujo que envíe correos electrónicos de forma automática cuando ocurra algún evento importante en vuestra aplicación.
+
+El correo debe estar relacionado con una acción real del proyecto. No vale enviar un correo de prueba sin contexto.
+
+Algunos ejemplos válidos serían:
+
+- confirmación de registro;
+- aviso de nueva incidencia;
+- notificación de una reserva;
+- recordatorio de una tarea;
+- aviso al administrador;
+- resumen de una operación realizada;
+- comunicación al usuario tras completar una acción.
+
+El envío deberá realizarse desde n8n usando un nodo de correo o un servicio externo correctamente configurado.
+
+---
+
+## 3. Envío de correos en español e inglés
+
+Deberéis ampliar el sistema de correos para que pueda generar mensajes en **español** y en **inglés**.
+
+La elección del idioma puede depender de lo que tenga configurado el usuario, de un parámetro enviado desde el backend o de una condición definida dentro del propio flujo de n8n.
+
+El correo deberá tener un asunto y un contenido coherente en cada idioma. No se trata solo de traducir una palabra, sino de preparar un mensaje completo y bien presentado.
+
+Por ejemplo:
+
+> Si el usuario tiene configurado el idioma `es`, recibe el correo en español.  
+> Si tiene configurado el idioma `en`, recibe el correo en inglés.
+
+---
+
+## Opciones optativas
+
+Las siguientes funcionalidades no son obligatorias, pero podéis incorporarlas para mejorar el proyecto y darle más valor.
+
+---
+
+## 4. Envío o almacenamiento de imágenes y archivos
+
+Podéis crear un flujo que gestione imágenes o archivos relacionados con vuestra aplicación.
+
+Este flujo puede servir para:
+
+- recibir un archivo desde la aplicación;
+- almacenar una imagen en el servidor;
+- guardar un documento en un servicio externo;
+- registrar la ruta o URL del archivo en la base de datos;
+- enviar un archivo como adjunto por correo;
+- asociar una imagen o documento a una entidad del proyecto.
+
+La funcionalidad deberá tener sentido dentro de vuestra aplicación.
+
+Por ejemplo:
+
+- en una app de incidencias, se podrían adjuntar fotos de la incidencia;
+- en una app de productos, se podrían guardar imágenes de productos;
+- en una app de reservas, se podría adjuntar un justificante;
+- en una app de tareas, se podrían subir documentos relacionados con una tarea.
+
+---
+
+## 5. Generación y envío de PDF con PDFMonkey
+
+Podéis incorporar un flujo que genere documentos PDF usando **PDFMonkey**.
+
+El PDF debe generarse con datos reales de vuestra aplicación. No será válido generar siempre el mismo PDF fijo sin información dinámica.
+
+Algunos ejemplos posibles:
+
+- justificante de una reserva;
+- informe de una incidencia;
+- resumen de actividad de un usuario;
+- factura o recibo;
+- ficha de un producto;
+- informe administrativo;
+- resumen de tareas completadas;
+- documento de confirmación.
+
+Una vez generado el PDF, podéis hacer alguna de estas acciones:
+
+- enviarlo por correo electrónico;
+- almacenarlo en el servidor;
+- guardar su URL en la base de datos;
+- permitir su descarga desde la aplicación;
+- enviarlo al administrador o al usuario correspondiente.
+
+---
+
+# Integración con el proyecto principal
+
+Todas las automatizaciones deberán estar conectadas con vuestra aplicación.
+
+Es decir, no basta con crear flujos sueltos en n8n. Debe quedar claro qué acción de la aplicación activa cada flujo y para qué sirve.
+
+Algunos eventos posibles son:
+
+- nuevo usuario registrado;
+- nuevo mensaje enviado;
+- nueva incidencia creada;
+- nueva reserva confirmada;
+- nuevo pedido realizado;
+- archivo subido correctamente;
+- informe solicitado por un administrador;
+- tarea finalizada.
+
+Cada grupo deberá adaptar estos ejemplos a su propio proyecto.
+
+---
+
+# Requisitos mínimos
+
+Como mínimo, el proyecto deberá incluir:
+
+1. Servicio n8n desplegado mediante Docker.
+2. Al menos un flujo activado desde el backend, desde la aplicación o mediante webhook.
+3. Análisis de mensajes con Ollama.
+4. Envío de un resumen al administrador.
+5. Envío automático de correos electrónicos.
+6. Envío de correos en español e inglés.
+7. Documentación técnica de los flujos creados.
+8. Evidencias de funcionamiento.
+
+Las funcionalidades de gestión de archivos/imágenes y generación de PDF con PDFMonkey serán optativas, aunque se valorarán positivamente si están bien integradas.
+
+---
+
+# Documentación que debéis entregar
+
+Deberéis documentar esta parte del proyecto explicando de forma clara:
+
+- qué papel tiene n8n dentro de vuestra arquitectura;
+- cómo se despliega el servicio con Docker;
+- qué flujos habéis creado;
+- qué evento activa cada flujo;
+- qué datos recibe cada flujo;
+- qué acciones realiza;
+- qué servicios externos utiliza;
+- qué variables de entorno son necesarias;
+- qué pruebas habéis realizado;
+- qué problemas habéis encontrado y cómo los habéis solucionado.
+
+También deberéis incluir capturas de pantalla o exportaciones de los flujos de n8n para que se pueda revisar el trabajo realizado.
+
+---
+
+# Evidencias de funcionamiento
+
+Durante la entrega o defensa del proyecto, deberéis poder demostrar que:
+
+- n8n arranca correctamente en Docker;
+- al menos un flujo se activa desde vuestra aplicación, backend o webhook;
+- Ollama analiza mensajes y devuelve una respuesta útil;
+- el administrador recibe o puede consultar el resumen generado;
+- se envían correos electrónicos correctamente;
+- los correos pueden generarse en español e inglés;
+- las funcionalidades optativas, si se han realizado, están conectadas con el proyecto y funcionan con datos reales.
+
+---
+
+# Criterios de valoración
+
+Se valorará especialmente:
+
+- que las automatizaciones tengan sentido dentro del proyecto;
+- que los flujos estén bien organizados en n8n;
+- que el sistema esté correctamente desplegado con Docker;
+- que se utilicen variables de entorno y credenciales de forma segura;
+- que los datos enviados a Ollama sean reales y dinámicos;
+- que los correos estén bien redactados y adaptados al idioma correspondiente;
+- que las opciones optativas estén bien integradas, si se realizan;
+- que la documentación sea clara y permita reproducir la configuración.
+
+No se valorará positivamente una solución basada únicamente en pruebas aisladas, flujos desconectados del proyecto o automatizaciones sin utilidad real para la aplicación.
+
+---
