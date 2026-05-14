@@ -9,7 +9,7 @@ const config = {
   tagline: 'Ercilla are cool',
   favicon: 'img/favicon.ico',
 
-  future: { v4: true },
+  //future: { v4: true },
 
   url: 'https://project1-erciapps.sytes.net',
   baseUrl: '/',
@@ -35,6 +35,22 @@ const config = {
   plugins: [
     '@docusaurus/plugin-ideal-image',
     'docusaurus-plugin-image-zoom',
+
+    // ⚙️ React Player en modo lazy
+    function aliasReactPlayer() {
+      return {
+        name: 'alias-react-player-lazy',
+        configureWebpack() {
+          return {
+            resolve: {
+              alias: {
+                'react-player': require.resolve('react-player/lazy'),
+              },
+            },
+          };
+        },
+      };
+    },
 
     // ⚙️ Integración de Tailwind + Autoprefixer
     function tailwindPlugin() {
