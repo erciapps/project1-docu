@@ -3,12 +3,80 @@ sidebar_position: 2
 ---
 
 # Retornar datos de sesión
-Existe la necesidad de cuando un usuario/empleado inicia sesión en la plataforma, y crea algún tipo de registro como por ejemplo
-un registro de solicitud (en nuestro ejemplo de recursos humanos), es necesario indicar quien solicita esa solicitud.
 
-## Cambiar la funcion sql
-Nuestra función `login_empleado` ahora mismo retorna un dato tipo `BOOLEAN` (`true` si el login en correcto, `false` si no lo es).
-Debemos cambiar a tipo INTEGER para retornar el `id` del empleado (usuario):
+Cuando un usuario o empleado inicia sesión en la plataforma y crea algún tipo de registro, por ejemplo una solicitud de recursos humanos, la aplicación que realiza la inserción necesita saber **qué usuario autenticado está realizando la operación**.
+
+En esta práctica, la autenticación la gestiona **Flask**, pero la inserción puede realizarla una aplicación **Java/Tomcat** o **PHP**. Para resolverlo, Flask devolverá los datos básicos de sesión al reverse proxy, y Nginx Proxy Manager los reenviará a la aplicación mediante cabeceras HTTP.
+
+El flujo general será:
+
+```text
+Usuario inicia sesión en Flask
+        ↓
+Flask guarda en sesión user_id, user y roles
+        ↓
+El usuario accede a una ruta protegida
+        ↓
+Nginx pregunta a Flask si puede acceder
+        ↓
+Flask responde con X-User-Id, X-Username y X-Role
+        ↓
+Nginx reenvía esas cabeceras a Java/PHP
+        ↓
+Java/PHP usa el id del usuario en sus operaciones
+```
+
+La responsabilidad queda dividida de esta forma:
+
+```text
+Flask
+- Autentica al usuario.
+- Guarda la sesión.
+- Guarda user_id, user y roles.
+- Responde a /auth/verify.
+
+Nginx Proxy Manager
+- Protege rutas.
+- Pregunta a Flask si el usuario tiene permiso.
+- Recoge X-User-Id, X-Username y X-Role.
+- Reenvía esas cabeceras a Java o PHP.
+
+Java/PHP
+- No gestionan el login.
+- Leen X-User-Id, X-Username y X-Role.
+- Usan el id del usuario para guardar quién realiza cada operación.
+```
+
+La idea clave es:
+
+```text
+Java no accede directamente a la sesión de Flask.
+Java recibe datos verificados mediante cabeceras añadidas por Nginx.
+```
+
+
+---
+
+## 1. Cambiar la función SQL
+
+La función `login_empleado` inicialmente devuelve un valor de tipo `BOOLEAN`:
+
+- `true` si el login es correcto.
+- `false` si el login es incorrecto.
+
+Para poder conocer el identificador del empleado autenticado, se modifica la función para que devuelva un `INTEGER` con el `id` del empleado.
+
+Si el login es incorrecto, devolverá `NULL`.
+
+:::warning
+Si ya existe la función anterior con el mismo nombre y parámetros, puede ser necesario eliminarla primero, ya que PostgreSQL no siempre permite cambiar directamente el tipo de retorno con `CREATE OR REPLACE`.
+:::
+
+```sql
+DROP FUNCTION IF EXISTS login_empleado(VARCHAR, VARCHAR);
+```
+
+Nueva función:
 
 ```sql
 CREATE OR REPLACE FUNCTION login_empleado(
@@ -40,8 +108,33 @@ END;
 $$ LANGUAGE plpgsql;
 ```
 
-## Modificar el login de Flask
-En la parte donde almacenamos el inicio de sesión, tenemos que modificar para añadir la nueva propiedad. 
+Con este cambio:
+
+```text
+Login correcto   → devuelve el id del empleado
+Login incorrecto → devuelve NULL
+```
+
+---
+
+## 2. Modificar la función `login_empleado` en Flask
+
+En Flask, la función Python puede mantenerse, pero ahora su resultado será el `id` del empleado o `None`.
+
+```python
+def login_empleado(user, passwd):
+    """Devuelve el id del empleado si el login es correcto; si no, devuelve None."""
+    with get_conn() as conn:
+        with conn.cursor() as cur:
+            cur.execute("SELECT login_empleado(%s, %s);", (user, passwd))
+            return cur.fetchone()[0]
+```
+
+---
+
+## 3. Guardar el id en la sesión de Flask
+
+En el login de Flask, cuando el usuario se autentica correctamente, se almacena el identificador del empleado en la sesión.
 
 ```python
 empleado_id = login_empleado(user, passwd)
@@ -51,14 +144,15 @@ if empleado_id is not None:
     session["login"] = True
     session["user"] = user
     session["user_id"] = empleado_id
-    session["roles"] = ["usuario"]
+    session["roles"] = ["empleado"]
 
     if next_url_segura(next_url):
         return redirect(next_url)
+
     return redirect(url_for("index"))
 ```
 
-Y en la parte del usuario `admin` (variables de entorno):
+Para el usuario administrador definido mediante variables de entorno:
 
 ```python
 if user == USUARIO and passwd == PASSWD:
@@ -67,14 +161,26 @@ if user == USUARIO and passwd == PASSWD:
     session["user"] = user
     session["user_id"] = 0
     session["roles"] = ["admin"]
+
+    if next_url_segura(next_url):
+        return redirect(next_url)
+
+    return redirect(url_for("index"))
 ```
 
-### Adaptar `.py` para devolver el id
-Añadir `make_response`
+---
+
+## 4. Devolver datos de sesión desde `/auth/verify`
+
+Para que Nginx Proxy Manager pueda pasar los datos del usuario autenticado a Java o PHP, el endpoint `/auth/verify` debe devolver cabeceras HTTP.
+
+Primero se añade `make_response` al import de Flask:
 
 ```python
 from flask import Flask, render_template, request, redirect, url_for, session, jsonify, make_response
 ```
+
+Después se modifica el endpoint `/auth/verify`:
 
 ```python
 @app.route("/auth/verify")
@@ -120,62 +226,91 @@ def auth_verify():
     return "", 403
 ```
 
+De esta forma, cuando un usuario autenticado tenga permiso, Flask devolverá cabeceras como estas:
 
-## Configuración reverse proxy
+```http
+X-User-Id: 3
+X-Username: gaspar
+X-Role: empleado
+```
 
-### General
+---
+
+## 5. Configuración general del reverse proxy
+
+Esta configuración se coloca en la sección avanzada/general del Proxy Host de Nginx Proxy Manager.
 
 :::danger MUY IMPORTANTE
-* **CAMBIAR `practica4-flaskapp-1` POR EL NOMBRE DEL HOST EN TU STACK (ejecutar `docker network inspect NOMBRE_RED`)**   
+- Cambia `practica4-flaskapp-1` por el nombre real del contenedor o servicio de Flask en tu stack.
+- Puedes comprobar los nombres disponibles con:
 
-* **CAMBIAR `empleado` SI ES NECESARIO EN `proxy_set_header X-Required-Roles "empleado"` POR EL NOMBRE DE TU ROL**.   
+```bash
+docker network inspect NOMBRE_RED
+```
 
-*ESTE NOMBRE DE ROL
-TIENE QUE COINCIDIR CON EL NOMBRE ESTABLECIDO EN LA SESIÓN, POR EJEMPLO: `session["roles"] = ["empleado"]`*
+- El rol indicado en `X-Required-Roles` debe coincidir exactamente con el rol guardado en Flask.
+- Por ejemplo, si Flask guarda `session["roles"] = ["empleado"]`, Nginx debe pedir `empleado`, no `usuario` ni `cliente`.
 :::
 
-```python
+```nginx
 location = /_flask_auth_admin {
-internal;
-proxy_pass http://practica4-flaskapp-1:8888/auth/verify;
-proxy_pass_request_body off;
-proxy_set_header Content-Length "";
-proxy_set_header Cookie $http_cookie;
-proxy_set_header Authorization $http_authorization;
-proxy_set_header X-Required-Roles "admin";
-proxy_set_header X-Original-URI $request_uri;
-proxy_set_header X-Original-Host $host;
-proxy_set_header X-Original-Method $request_method;
-proxy_set_header X-Real-IP $remote_addr;
-proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    internal;
+
+    proxy_pass http://practica4-flaskapp-1:8888/auth/verify;
+    proxy_pass_request_body off;
+    proxy_set_header Content-Length "";
+
+    proxy_set_header Cookie $http_cookie;
+    proxy_set_header Authorization $http_authorization;
+
+    proxy_set_header X-Required-Roles "admin";
+
+    proxy_set_header X-Original-URI $request_uri;
+    proxy_set_header X-Original-Host $host;
+    proxy_set_header X-Original-Method $request_method;
+
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
 }
+
 location = /_flask_auth_empleado {
-internal;
-proxy_pass http://practica4-flaskapp-1:8888/auth/verify;
-proxy_pass_request_body off;
-proxy_set_header Content-Length "";
-proxy_set_header Cookie $http_cookie;
-proxy_set_header Authorization $http_authorization;
-proxy_set_header X-Required-Roles "empleado";
-proxy_set_header X-Original-URI $request_uri;
-proxy_set_header X-Original-Host $host;
-proxy_set_header X-Original-Method $request_method;
-proxy_set_header X-Real-IP $remote_addr;
-proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    internal;
+
+    proxy_pass http://practica4-flaskapp-1:8888/auth/verify;
+    proxy_pass_request_body off;
+    proxy_set_header Content-Length "";
+
+    proxy_set_header Cookie $http_cookie;
+    proxy_set_header Authorization $http_authorization;
+
+    proxy_set_header X-Required-Roles "empleado";
+
+    proxy_set_header X-Original-URI $request_uri;
+    proxy_set_header X-Original-Host $host;
+    proxy_set_header X-Original-Method $request_method;
+
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
 }
+
 location @login_redirect {
-return 302 /login?next=$request_uri;
+    return 302 /login?next=$request_uri;
 }
+
 location @forbidden {
-return 403;
+    return 403;
 }
 ```
 
+<img src="/img/nginx_ruta3.png" alt="no ia" width="390" />
 
+---
 
-### Configuración ruta protegida para empleado:
-Poner en las rutas a proteger con rol de **empleado**
-```
+## 6. Configurar una ruta protegida para empleado
+
+En cada ruta que deba ser accesible por empleados, se añade:
+
+```nginx
 auth_request /_flask_auth_empleado;
 
 auth_request_set $auth_user_id $upstream_http_x_user_id;
@@ -190,9 +325,25 @@ proxy_set_header X-Username $auth_username;
 proxy_set_header X-Role $auth_role;
 ```
 
-### Configuración ruta protegida para admin:
-Poner en las rutas a proteger con rol de **administrador**
+Por ejemplo, para una página Java de empleado:
+
+```text
+/vistas/protegida_usuario.jsp
 ```
+
+
+
+<img src="/img/nginx_ruta1.png" alt="no ia" width="390" />
+
+
+
+---
+
+## 7. Configurar una ruta protegida para administrador
+
+En cada ruta que deba ser accesible solo por administradores, se añade:
+
+```nginx
 auth_request /_flask_auth_admin;
 
 auth_request_set $auth_user_id $upstream_http_x_user_id;
@@ -207,11 +358,94 @@ proxy_set_header X-Username $auth_username;
 proxy_set_header X-Role $auth_role;
 ```
 
-## Obtener datos de sesión en Java
+Por ejemplo:
 
-En el controlador indicar de la siguiente manera:
-```Java
-String userId = request.getHeader("X-User-Id");
+```text
+/vistas/protegida_admin.jsp
+```
+
+<img src="/img/nginx_ruta2.png" alt="no ia" width="390" />
+
+---
+
+## 8. Obtener datos de sesión en Java
+
+En Java, los datos se obtienen desde las cabeceras HTTP que ha añadido Nginx después de validar la sesión en Flask.
+
+En un controlador o servlet:
+
+```java
+String userIdHeader = request.getHeader("X-User-Id");
 String username = request.getHeader("X-Username");
 String roleHeader = request.getHeader("X-Role");
+
+if (userIdHeader == null || userIdHeader.isBlank()) {
+    response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Usuario no autenticado");
+    return;
+}
+
+int idUsuario = Integer.parseInt(userIdHeader);
 ```
+
+---
+
+## 9. Uso correcto con DAO
+
+No es recomendable leer las cabeceras HTTP directamente dentro del DAO.
+
+El DAO no debería conocer `request`, porque `request` pertenece a la capa web.
+
+La forma correcta es:
+
+```text
+Controlador lee X-User-Id
+        ↓
+Controlador convierte el id a int
+        ↓
+Controlador llama al DAO pasando idUsuario
+        ↓
+DAO usa idUsuario en el INSERT
+```
+
+Ejemplo de controlador:
+
+```java
+String userIdHeader = request.getHeader("X-User-Id");
+
+if (userIdHeader == null || userIdHeader.isBlank()) {
+    response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Usuario no autenticado");
+    return;
+}
+
+int idUsuario = Integer.parseInt(userIdHeader);
+
+String titulo = request.getParameter("titulo");
+String descripcion = request.getParameter("descripcion");
+
+SolicitudDAO dao = new SolicitudDAO();
+dao.insertarSolicitud(titulo, descripcion, idUsuario);
+```
+
+Ejemplo de DAO:
+
+```java
+public void insertarSolicitud(String titulo, String descripcion, int idUsuario) throws SQLException {
+    String sql = """
+        INSERT INTO solicitudes (titulo, descripcion, empleado_id)
+        VALUES (?, ?, ?)
+    """;
+
+    try (Connection conn = getConnection();
+         PreparedStatement ps = conn.prepareStatement(sql)) {
+
+        ps.setString(1, titulo);
+        ps.setString(2, descripcion);
+        ps.setInt(3, idUsuario);
+
+        ps.executeUpdate();
+    }
+}
+```
+
+---
+
