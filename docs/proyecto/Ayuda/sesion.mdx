@@ -1,0 +1,217 @@
+---
+sidebar_position: 2
+---
+
+# Retornar datos de sesión
+Existe la necesidad de cuando un usuario/empleado inicia sesión en la plataforma, y crea algún tipo de registro como por ejemplo
+un registro de solicitud (en nuestro ejemplo de recursos humanos), es necesario indicar quien solicita esa solicitud.
+
+## Cambiar la funcion sql
+Nuestra función `login_empleado` ahora mismo retorna un dato tipo `BOOLEAN` (`true` si el login en correcto, `false` si no lo es).
+Debemos cambiar a tipo INTEGER para retornar el `id` del empleado (usuario):
+
+```sql
+CREATE OR REPLACE FUNCTION login_empleado(
+    _login VARCHAR,
+    _passwd VARCHAR
+)
+RETURNS INTEGER
+AS $$
+DECLARE
+    v_id INTEGER;
+    v_passwd_almacenada VARCHAR(255);
+BEGIN
+    SELECT id, passwd
+    INTO v_id, v_passwd_almacenada
+    FROM empleados
+    WHERE correo = _login OR nombre = _login
+    LIMIT 1;
+
+    IF NOT FOUND THEN
+        RETURN NULL;
+    END IF;
+
+    IF crypt(_passwd, v_passwd_almacenada) = v_passwd_almacenada THEN
+        RETURN v_id;
+    END IF;
+
+    RETURN NULL;
+END;
+$$ LANGUAGE plpgsql;
+```
+
+## Modificar el login de Flask
+En la parte donde almacenamos el inicio de sesión, tenemos que modificar para añadir la nueva propiedad. 
+
+```python
+empleado_id = login_empleado(user, passwd)
+
+if empleado_id is not None:
+    session.permanent = True
+    session["login"] = True
+    session["user"] = user
+    session["user_id"] = empleado_id
+    session["roles"] = ["usuario"]
+
+    if next_url_segura(next_url):
+        return redirect(next_url)
+    return redirect(url_for("index"))
+```
+
+Y en la parte del usuario `admin` (variables de entorno):
+
+```python
+if user == USUARIO and passwd == PASSWD:
+    session.permanent = True
+    session["login"] = True
+    session["user"] = user
+    session["user_id"] = 0
+    session["roles"] = ["admin"]
+```
+
+### Adaptar `.py` para devolver el id
+Añadir `make_response`
+
+```python
+from flask import Flask, render_template, request, redirect, url_for, session, jsonify, make_response
+```
+
+```python
+@app.route("/auth/verify")
+def auth_verify():
+    """
+    Endpoint para validación desde reverse proxy.
+
+    Respuestas:
+    - 204: permitido.
+    - 401: no autenticado.
+    - 403: autenticado, pero sin rol requerido.
+    """
+    if not session.get("login"):
+        return "", 401
+
+    roles_usuario = session.get("roles", [])
+
+    if isinstance(roles_usuario, str):
+        roles_usuario = [roles_usuario]
+
+    def respuesta_permitida():
+        response = make_response("", 204)
+        response.headers["X-User-Id"] = str(session.get("user_id", ""))
+        response.headers["X-Username"] = session.get("user", "")
+        response.headers["X-Role"] = ",".join(roles_usuario)
+        return response
+
+    roles_requeridos = request.headers.get("X-Required-Roles", "").strip()
+
+    if not roles_requeridos:
+        return respuesta_permitida()
+
+    lista_roles_requeridos = [
+        rol.strip()
+        for rol in roles_requeridos.split(",")
+        if rol.strip()
+    ]
+
+    for rol in lista_roles_requeridos:
+        if rol in roles_usuario:
+            return respuesta_permitida()
+
+    return "", 403
+```
+
+
+## Configuración reverse proxy
+
+### General
+
+:::danger MUY IMPORTANTE
+* **CAMBIAR `practica4-flaskapp-1` POR EL NOMBRE DEL HOST EN TU STACK (ejecutar `docker network inspect NOMBRE_RED`)**   
+
+* **CAMBIAR `empleado` SI ES NECESARIO EN `proxy_set_header X-Required-Roles "empleado"` POR EL NOMBRE DE TU ROL**.   
+
+*ESTE NOMBRE DE ROL
+TIENE QUE COINCIDIR CON EL NOMBRE ESTABLECIDO EN LA SESIÓN, POR EJEMPLO: `session["roles"] = ["empleado"]`*
+:::
+
+```python
+location = /_flask_auth_admin {
+internal;
+proxy_pass http://practica4-flaskapp-1:8888/auth/verify;
+proxy_pass_request_body off;
+proxy_set_header Content-Length "";
+proxy_set_header Cookie $http_cookie;
+proxy_set_header Authorization $http_authorization;
+proxy_set_header X-Required-Roles "admin";
+proxy_set_header X-Original-URI $request_uri;
+proxy_set_header X-Original-Host $host;
+proxy_set_header X-Original-Method $request_method;
+proxy_set_header X-Real-IP $remote_addr;
+proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+}
+location = /_flask_auth_empleado {
+internal;
+proxy_pass http://practica4-flaskapp-1:8888/auth/verify;
+proxy_pass_request_body off;
+proxy_set_header Content-Length "";
+proxy_set_header Cookie $http_cookie;
+proxy_set_header Authorization $http_authorization;
+proxy_set_header X-Required-Roles "empleado";
+proxy_set_header X-Original-URI $request_uri;
+proxy_set_header X-Original-Host $host;
+proxy_set_header X-Original-Method $request_method;
+proxy_set_header X-Real-IP $remote_addr;
+proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+}
+location @login_redirect {
+return 302 /login?next=$request_uri;
+}
+location @forbidden {
+return 403;
+}
+```
+
+
+
+### Configuración ruta protegida para empleado:
+Poner en las rutas a proteger con rol de **empleado**
+```
+auth_request /_flask_auth_empleado;
+
+auth_request_set $auth_user_id $upstream_http_x_user_id;
+auth_request_set $auth_username $upstream_http_x_username;
+auth_request_set $auth_role $upstream_http_x_role;
+
+error_page 401 = @login_redirect;
+error_page 403 = @forbidden;
+
+proxy_set_header X-User-Id $auth_user_id;
+proxy_set_header X-Username $auth_username;
+proxy_set_header X-Role $auth_role;
+```
+
+### Configuración ruta protegida para admin:
+Poner en las rutas a proteger con rol de **administrador**
+```
+auth_request /_flask_auth_admin;
+
+auth_request_set $auth_user_id $upstream_http_x_user_id;
+auth_request_set $auth_username $upstream_http_x_username;
+auth_request_set $auth_role $upstream_http_x_role;
+
+error_page 401 = @login_redirect;
+error_page 403 = @forbidden;
+
+proxy_set_header X-User-Id $auth_user_id;
+proxy_set_header X-Username $auth_username;
+proxy_set_header X-Role $auth_role;
+```
+
+## Obtener datos de sesión en Java
+
+En el controlador indicar de la siguiente manera:
+```Java
+String userId = request.getHeader("X-User-Id");
+String username = request.getHeader("X-Username");
+String roleHeader = request.getHeader("X-Role");
+```
